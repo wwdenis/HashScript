@@ -1,7 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace HashScript
@@ -31,107 +31,93 @@ namespace HashScript
 
         public IEnumerable<Token> ReadAll()
         {
-            var result = new List<Token>();
-            Token current;
-            
-            while ((current = ReadNext()) is not null)
+            if (reader.Peek() < 0)
             {
-                result.Add(current);
+                return Enumerable.Empty<Token>();
             }
 
-            return result;
-        }
+            var buffer = new List<(int Pos, char Content, TokenType Type)>();
+            int currentIndex;
+            var position = 0;
+            var currentType = BuildType((char)reader.Peek());
 
-        public Token ReadNext()
-        {
-            var token = ReadSpecial();
-            if (token is not null)
+            while ((currentIndex = reader.Read()) >= 0)
             {
-                return token;
-            }
-
-            var content = new StringBuilder();
-            TokenType nextType;
-
-            do
-            {
-                var current = ReadChar();
-                if (current is null)
+                var currentChar = (char)currentIndex;
+                if (currentType != BuildType(currentChar))
                 {
-                    return null;
+                    currentType = BuildType(currentChar);
+                    position++;
+                }
+                buffer.Add((position, currentChar, currentType));
+            }
+
+            var result = new List<Token>();
+            var maxPos = buffer.Max(i => i.Pos);
+
+            for (int pos = 0; pos <= maxPos; pos++)
+            {
+                var group = buffer.Where(i => i.Pos == pos);
+                var type = group.First().Type;
+                var size = group.Count();
+
+                var content = new StringBuilder();
+                content.Append(group.Select(i => i.Content).ToArray());
+
+                Token escapedToken = null;
+                Token token = null;
+
+                switch (type)
+                {
+                    case TokenType.Text:
+                        token = new Token(type, size, content.ToString());
+                        break;
+                    case TokenType.NewLine:
+                        content.Replace("\r\n", "\n");
+                        token = new Token(type, content.Length);
+                        break;
+                    case TokenType.Hash:
+                        if (size > 1)
+                        {
+                            var escapedSize = size / 2;
+                            var escapedContent = new string(Token.CharHash, escapedSize);
+                            escapedToken = new Token(TokenType.Text, escapedSize, escapedContent);
+                        }
+                        if (size % 2 > 0)
+                        {
+                            token = new Token(type, size);
+                        }
+                        break;
+                    default:
+                        token = new Token(type, size);
+                        break;
                 }
 
-                var next = PeekChar();
-                nextType = ParseTokenType(next ?? CharSpace);
-                content.Append(current);
-            }
-            while (nextType == TokenType.Text);
+                if (escapedToken is not null)
+                {
+                    result.Add(escapedToken);
+                }
 
-            return new Token(TokenType.Text, content.ToString());
-        }
-
-        private static TokenType ParseTokenType(char content)
-        {
-            var mappings = new Dictionary<char, TokenType>
-            {
-                { CharSpace, TokenType.Space },
-                { CharTab, TokenType.Tab },
-                { CharNewLine, TokenType.NewLine },
-                { CharReturn, TokenType.NewLine },
-                { CharHash, TokenType.Hash },
-            };
-            
-            if (mappings.TryGetValue(content, out var type))
-            {
-                return type;
-            }
-
-            return TokenType.Text;
-        }
-
-        private Token ReadSpecial()
-        {
-            var next = PeekChar();
-            if (next is null)
-            {
-                return null;
-            }
-
-            var type = ParseTokenType(next.Value);
-            if (type == TokenType.Text)
-            {
-                return null;
-            }
-
-            var current = ReadChar();
-            var content = type == TokenType.NewLine ? Environment.NewLine : current.ToString();
-            return new Token(type, content);
-        }
-
-        private char? PeekChar()
-        {
-            var next = reader.Peek();
-            return next >= 0 ? (char)next : null;
-        }
-
-        private char? ReadChar()
-        {
-            var current = reader.Read();
-
-            if (current == -1)
-            {
-                return null;
-            }
-
-            var result = (char)current;
-
-            if (result == CharReturn && PeekChar() == CharNewLine)
-            {
-                reader.Read();
-                return CharNewLine;
+                if (token is not null)
+                {
+                    result.Add(token);
+                }
             }
 
             return result;
+        }
+
+        private static TokenType BuildType(char content)
+        {
+            return content switch
+            {
+                CharSpace => TokenType.Space,
+                CharTab => TokenType.Tab,
+                CharReturn => TokenType.NewLine,
+                CharNewLine => TokenType.NewLine,
+                CharHash => TokenType.Hash,
+                _ => TokenType.Text,
+            };
         }
     }
 }

@@ -20,7 +20,7 @@ namespace HashScript.Tests
                 }
             },
             {
-                "	",
+                "\t",
                 new[]
                 {
                     new Token(TokenType.Tab),
@@ -48,6 +48,13 @@ namespace HashScript.Tests
                 }
             },
             {
+                "##",
+                new[]
+                {
+                    new Token("#"),
+                }
+            },
+            {
                 "abc",
                 new[]
                 {
@@ -64,7 +71,7 @@ namespace HashScript.Tests
                 }
             },
             {
-                "first	second",
+                "first\tsecond",
                 new[]
                 {
                     new Token("first"),
@@ -91,8 +98,17 @@ namespace HashScript.Tests
                 }
             },
             {
+                "##escaped##",
+                new[]
+                {
+                    new Token("#"),
+                    new Token("escaped"),
+                    new Token("#"),
+                }
+            },
+            {
                 
-                "Good Morning Mr. #UserName#!!!\n\n\nToday  is		#CurrentDate#",
+                "Good Morning Mr. #UserName#!!!\n\n\nToday  is\t\t#CurrentDate#",
                 new[]
                 {
                     new Token("Good"),
@@ -105,21 +121,18 @@ namespace HashScript.Tests
                     new Token("UserName"),
                     new Token(TokenType.Hash),
                     new Token("!!!"),
-                    new Token(TokenType.NewLine),
-                    new Token(TokenType.NewLine),
-                    new Token(TokenType.NewLine),
+                    new Token(TokenType.NewLine, 3),
                     new Token("Today"),
-                    new Token(TokenType.Space),
-                    new Token(TokenType.Space),
+                    new Token(TokenType.Space, 2),
                     new Token("is"),
-                    new Token(TokenType.Tab),
-                    new Token(TokenType.Tab),
+                    new Token(TokenType.Tab, 2),
                     new Token(TokenType.Hash),
                     new Token("CurrentDate"),
                     new Token(TokenType.Hash),
                 }
             },
         };
+
 
         [Theory]
         [MemberData(nameof(ReadScenarios))]
