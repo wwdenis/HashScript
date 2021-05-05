@@ -56,47 +56,29 @@ namespace HashScript
                 var group = buffer.Where(i => i.Pos == pos);
                 var type = group.First().Type;
                 var size = group.Count();
+                var content = string.Empty;
 
-                var content = new StringBuilder();
-                content.Append(group.Select(i => i.Content).ToArray());
-
-                Token escapedToken = null;
-                Token token = null;
-
-                switch (type)
+                if (type == TokenType.Text)
                 {
-                    case TokenType.Text:
-                        token = new Token(type, size, content.ToString());
-                        break;
-                    case TokenType.NewLine:
-                        content.Replace("\r\n", "\n");
-                        token = new Token(type, content.Length);
-                        break;
-                    case TokenType.Hash:
-                        if (size > 1)
-                        {
-                            var escapedChar = type.BuildChar();
-                            var escapedSize = size / 2;
-                            var escapedContent = new string(escapedChar, escapedSize);
-                            escapedToken = new Token(TokenType.Text, escapedSize, escapedContent);
-                        }
-                        if (size % 2 > 0)
-                        {
-                            token = new Token(type, 1);
-                        }
-                        break;
-                    default:
-                        token = new Token(type, size);
-                        break;
+                    content = new string(group.Select(i => i.Content).ToArray());
+                }
+                else if (type == TokenType.NewLine)
+                {
+                    size = group.Count(i => i.Content != '\r');
+                }
+                else if (type.IsSpecial())
+                {
+                    var escapedToken = type.TryEscape(size);
+                    if (escapedToken is not null)
+                    {
+                        result.Add(escapedToken);
+                    }
+                    size %= 2;
                 }
 
-                if (escapedToken is not null)
+                if (size > 0)
                 {
-                    result.Add(escapedToken);
-                }
-
-                if (token is not null)
-                {
+                    var token = new Token(type, size, content);
                     result.Add(token);
                 }
             }

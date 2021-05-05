@@ -9,10 +9,20 @@ namespace HashScript.Extensions
         {
             { ' ' , TokenType.Space },
             { '\t' , TokenType.Tab },
+            { '\n' , TokenType.NewLine }, 
             { '\r' , TokenType.NewLine },
-            { '\n' , TokenType.NewLine },
             { '#' , TokenType.Hash },
         };
+
+        static readonly TokenType[] SpecialTypes = new[]
+        {
+            TokenType.Hash,
+        };
+
+        public static bool IsSpecial(this TokenType type)
+        {
+            return SpecialTypes.Contains(type);
+        }
 
         public static TokenType BuildType(this char content)
         {
@@ -29,7 +39,20 @@ namespace HashScript.Extensions
             {
                 return (char)0;
             }
-            return Mappings.Single(i => i.Value == type).Key;
+            return Mappings.First(i => i.Value == type).Key;
+        }
+
+        public static Token TryEscape(this TokenType type, int size)
+        {
+            if (!type.IsSpecial() || size == 1)
+            {
+                return null;
+            }
+
+            size /= 2;
+            var item = type.BuildChar();
+            var content = new string(item, size);
+            return new Token(TokenType.Text, size, content);
         }
     }
 }
