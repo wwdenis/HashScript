@@ -9,5 +9,10 @@ namespace HashScript
         Space,
         Tab,
         Hash,
+        OpenBracket,
+        CloseBracket,
+        OpenParentheses,
+        CloseParentheses,
+
     }
 }

@@ -48,10 +48,56 @@ namespace HashScript.Tests
                 }
             },
             {
+                "[",
+                new[]
+                {
+                    new Token(TokenType.OpenBracket),
+                }
+            },
+            {
+                "]",
+                new[]
+                {
+                    new Token(TokenType.CloseBracket),
+                }
+            },
+            {
+                "(",
+                new[]
+                {
+                    new Token(TokenType.OpenParentheses),
+                }
+            },
+            {
+                ")",
+                new[]
+                {
+                    new Token(TokenType.CloseParentheses),
+                }
+            },
+            {
                 "##",
                 new[]
                 {
                     new Token("#"),
+                }
+            },
+            {
+                "[[[",
+                new[]
+                {
+                    new Token("["),
+                    new Token(TokenType.OpenBracket),
+                }
+            },
+            {
+                "((()))",
+                new[]
+                {
+                    new Token("("),
+                    new Token(TokenType.OpenParentheses),
+                    new Token(")"),
+                    new Token(TokenType.CloseParentheses),
                 }
             },
             {

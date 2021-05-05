@@ -12,11 +12,19 @@ namespace HashScript.Extensions
             { '\n' , TokenType.NewLine }, 
             { '\r' , TokenType.NewLine },
             { '#' , TokenType.Hash },
+            { '[' , TokenType.OpenBracket },
+            { ']' , TokenType.CloseBracket },
+            { '(' , TokenType.OpenParentheses },
+            { ')' , TokenType.CloseParentheses },
         };
 
         static readonly TokenType[] SpecialTypes = new[]
         {
             TokenType.Hash,
+            TokenType.OpenBracket,
+            TokenType.CloseBracket,
+            TokenType.OpenParentheses,
+            TokenType.CloseParentheses,
         };
 
         public static bool IsSpecial(this TokenType type)
