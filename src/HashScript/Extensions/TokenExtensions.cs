@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Collections.Generic;
+using HashScript.Domain;
 
 namespace HashScript.Extensions
 {

@@ -1,6 +1,6 @@
 using System;
 
-namespace HashScript
+namespace HashScript.Domain
 {
     public enum TokenType
     {
