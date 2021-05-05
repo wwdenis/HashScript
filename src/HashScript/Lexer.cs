@@ -3,17 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using HashScript.Extensions;
 
 namespace HashScript
 {
     public sealed class Lexer : IDisposable
     {
-        const char CharSpace = ' ';
-        const char CharTab = '	';
-        const char CharHash = '#';
-        const char CharNewLine = '\n';
-        const char CharReturn = '\r';
-
         readonly StringReader reader;
 
         public Lexer(string content)
@@ -36,17 +31,18 @@ namespace HashScript
                 return Enumerable.Empty<Token>();
             }
 
-            var buffer = new List<(int Pos, char Content, TokenType Type)>();
-            int currentIndex;
             var position = 0;
-            var currentType = BuildType((char)reader.Peek());
+            var buffer = new List<(int Pos, char Content, TokenType Type)>();
+            var currentIndex = reader.Peek();
+            var currentChar = (char)currentIndex;
+            var currentType = currentChar.BuildType();
 
             while ((currentIndex = reader.Read()) >= 0)
             {
-                var currentChar = (char)currentIndex;
-                if (currentType != BuildType(currentChar))
+                currentChar = (char)currentIndex;
+                if (currentType != currentChar.BuildType())
                 {
-                    currentType = BuildType(currentChar);
+                    currentType = currentChar.BuildType();
                     position++;
                 }
                 buffer.Add((position, currentChar, currentType));
@@ -79,13 +75,14 @@ namespace HashScript
                     case TokenType.Hash:
                         if (size > 1)
                         {
+                            var escapedChar = type.BuildChar();
                             var escapedSize = size / 2;
-                            var escapedContent = new string(Token.CharHash, escapedSize);
+                            var escapedContent = new string(escapedChar, escapedSize);
                             escapedToken = new Token(TokenType.Text, escapedSize, escapedContent);
                         }
                         if (size % 2 > 0)
                         {
-                            token = new Token(type, size);
+                            token = new Token(type, 1);
                         }
                         break;
                     default:
@@ -105,19 +102,6 @@ namespace HashScript
             }
 
             return result;
-        }
-
-        private static TokenType BuildType(char content)
-        {
-            return content switch
-            {
-                CharSpace => TokenType.Space,
-                CharTab => TokenType.Tab,
-                CharReturn => TokenType.NewLine,
-                CharNewLine => TokenType.NewLine,
-                CharHash => TokenType.Hash,
-                _ => TokenType.Text,
-            };
         }
     }
 }

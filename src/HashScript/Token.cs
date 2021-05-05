@@ -4,12 +4,6 @@ namespace HashScript
 {
     public class Token
     {
-        public const char CharSpace = ' ';
-        public const char CharHash = '#';
-        public const char CharTab = '\t';
-        public const char CharNewLine = '\n';
-        public const char CharReturn = '\r';
-
         public Token(TokenType type, int size, string content)
         {
             Type = type;
