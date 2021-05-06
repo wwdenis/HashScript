@@ -4,6 +4,7 @@ namespace HashScript.Domain
 {
     public enum TokenType
     {
+        EndOfStream,
         Text,
         NewLine,
         Space,

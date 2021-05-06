@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using HashScript.Domain;
 using HashScript.Extensions;
 
@@ -13,6 +14,11 @@ namespace HashScript
 
         public Lexer(string content)
         {
+            if (string.IsNullOrEmpty(content))
+            {
+                throw new ArgumentNullException(nameof(content));
+            }
+
             Content = content;
             reader = new StringReader(content);
         }
@@ -31,58 +37,46 @@ namespace HashScript
                 return Enumerable.Empty<Token>();
             }
 
-            var position = 0;
-            var buffer = new List<(int Pos, char Content, TokenType Type)>();
-            var currentIndex = reader.Peek();
-            var currentChar = (char)currentIndex;
-            var currentType = currentChar.BuildType();
-
-            while ((currentIndex = reader.Read()) >= 0)
-            {
-                currentChar = (char)currentIndex;
-                if (currentType != currentChar.BuildType())
-                {
-                    currentType = currentChar.BuildType();
-                    position++;
-                }
-                buffer.Add((position, currentChar, currentType));
-            }
-
             var result = new List<Token>();
-            var maxPos = buffer.Max(i => i.Pos);
+            var content = new StringBuilder();
+            var index = -1;
+            Token token = null;
 
-            for (int pos = 0; pos <= maxPos; pos++)
+            while ((index = reader.Read()) >= 0)
             {
-                var group = buffer.Where(i => i.Pos == pos);
-                var type = group.First().Type;
-                var size = group.Count();
-                var content = string.Empty;
-
-                if (type == TokenType.Text)
+                var current = (char)index;
+                if (current == '\r')
                 {
-                    content = new string(group.Select(i => i.Content).ToArray());
-                }
-                else if (type == TokenType.NewLine)
-                {
-                    size = group.Count(i => i.Content != '\r');
-                }
-                else if (type.IsSpecial())
-                {
-                    var escapedToken = type.TryEscape(size);
-                    if (escapedToken is not null)
-                    {
-                        result.Add(escapedToken);
-                    }
-                    size %= 2;
+                    continue;
                 }
 
-                if (size > 0)
+                var currentType = current.BuildType();
+                if (currentType == TokenType.Text)
                 {
-                    var token = new Token(type, size, content);
+                    content.Append(current);
+                }
+                else
+                {
+                    token = new Token(currentType);
+                }
+
+                var next = (char)Math.Max(reader.Peek(), 0);
+                var nextType = next.BuildType();
+                if (nextType != TokenType.Text)
+                {
+                    token = new Token(currentType, content.ToString());
+                }
+
+                if (token is not null)
+                {
                     result.Add(token);
+                    content.Clear();
+                    token = null;
                 }
             }
 
+            result.Add(new Token(TokenType.EndOfStream));
+           
             return result;
         }
     }
