@@ -114,7 +114,7 @@ namespace HashScript.Tests
             },
             {
                 
-                "Good Morning Mr. #UserName#!!!\n\n\nToday  is\t\t#$#",
+                "Good Morning Mr. #UserName#.\n\n\nToday  is\t\t#$#",
                 new[]
                 {
                     new Token("Good"),
@@ -126,7 +126,7 @@ namespace HashScript.Tests
                     new Token(TokenType.Hash),
                     new Token("UserName"),
                     new Token(TokenType.Hash),
-                    new Token("!!!"),
+                    new Token("."),
                     new Token(TokenType.NewLine),
                     new Token(TokenType.NewLine),
                     new Token(TokenType.NewLine),
