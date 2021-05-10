@@ -14,10 +14,10 @@ namespace HashScript.Extensions
             { '\n' , TokenType.NewLine }, 
             { '\r' , TokenType.NewLine },
             { '#' , TokenType.Hash },
-            { '[' , TokenType.OpenBracket },
-            { ']' , TokenType.CloseBracket },
-            { '(' , TokenType.OpenParentheses },
-            { ')' , TokenType.CloseParentheses },
+            { '+' , TokenType.Complex },
+            { '?' , TokenType.Condition },
+            { '!' , TokenType.Negate },
+            { '$' , TokenType.Content },
         };
 
         public static TokenType BuildType(this char content)

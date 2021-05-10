@@ -14,10 +14,10 @@ namespace HashScript.Tests
             { "\n", TokenType.NewLine },
             { "\r\n", TokenType.NewLine },
             { "#", TokenType.Hash },
-            { "[", TokenType.OpenBracket },
-            { "]", TokenType.CloseBracket },
-            { "(", TokenType.OpenParentheses },
-            { ")", TokenType.CloseParentheses },
+            { "+", TokenType.Complex },
+            { "?", TokenType.Condition },
+            { "!", TokenType.Negate },
+            { "$", TokenType.Content },
         };
 
         public static TheoryData MultiScenarios = new TheoryData<string, Token[]>
@@ -32,23 +32,23 @@ namespace HashScript.Tests
                 }
             },
             {
-                "[[[",
+                "+++",
                 new[]
                 {
-                    new Token(TokenType.OpenBracket),
-                    new Token(TokenType.OpenBracket),
-                    new Token(TokenType.OpenBracket),
+                    new Token(TokenType.Complex),
+                    new Token(TokenType.Complex),
+                    new Token(TokenType.Complex),
                     new Token(TokenType.EndOfStream),
                 }
             },
             {
-                "(())",
+                "!!$$",
                 new[]
                 {
-                    new Token(TokenType.OpenParentheses),
-                    new Token(TokenType.OpenParentheses),
-                    new Token(TokenType.CloseParentheses),
-                    new Token(TokenType.CloseParentheses),
+                    new Token(TokenType.Negate),
+                    new Token(TokenType.Negate),
+                    new Token(TokenType.Content),
+                    new Token(TokenType.Content),
                     new Token(TokenType.EndOfStream),
                 }
             },
@@ -114,7 +114,7 @@ namespace HashScript.Tests
             },
             {
                 
-                "Good Morning Mr. #UserName#!!!\n\n\nToday  is\t\t#CurrentDate#",
+                "Good Morning Mr. #UserName#!!!\n\n\nToday  is\t\t#$#",
                 new[]
                 {
                     new Token("Good"),
@@ -137,7 +137,7 @@ namespace HashScript.Tests
                     new Token(TokenType.Tab),
                     new Token(TokenType.Tab),
                     new Token(TokenType.Hash),
-                    new Token("CurrentDate"),
+                    new Token(TokenType.Content),
                     new Token(TokenType.Hash),
                     new Token(TokenType.EndOfStream),
                 }
@@ -149,14 +149,14 @@ namespace HashScript.Tests
         [MemberData(nameof(SingleScenarios))]
         public void Should_Read_Single(string content, TokenType expectedType)
         {
-            var subject = new Lexer(content);
-            var result = subject.ReadAll();
-
             var expected = new[]
             {
                 new Token(expectedType),
                 new Token(TokenType.EndOfStream),
             };
+            
+            var subject = new Lexer(content);
+            var result = subject.ReadAll();
 
             result.Should().BeEquivalentTo(expected);
         }

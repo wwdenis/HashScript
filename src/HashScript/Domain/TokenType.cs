@@ -10,10 +10,9 @@ namespace HashScript.Domain
         Space,
         Tab,
         Hash,
-        OpenBracket,
-        CloseBracket,
-        OpenParentheses,
-        CloseParentheses,
-
+        Complex,
+        Condition,
+        Negate,
+        Content,
     }
 }
