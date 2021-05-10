@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using HashScript.Domain;
-using HashScript.Extensions;
 
 namespace HashScript
 {
@@ -39,29 +38,29 @@ namespace HashScript
 
             var result = new List<Token>();
             var content = new StringBuilder();
-            var index = -1;
+            var current = -1;
             Token token = null;
 
-            while ((index = reader.Read()) >= 0)
+            while ((current = reader.Read()) >= 0)
             {
-                var current = (char)index;
                 if (current == '\r')
                 {
                     continue;
                 }
 
-                var currentType = current.BuildType();
+                var next = reader.Peek();
+                var currentType = BuildType(current);
+                var nextType = BuildType(next);
+
                 if (currentType == TokenType.Text)
                 {
-                    content.Append(current);
+                    content.Append((char)current);
                 }
                 else
                 {
                     token = new Token(currentType);
                 }
 
-                var next = (char)Math.Max(reader.Peek(), 0);
-                var nextType = next.BuildType();
                 if (nextType != TokenType.Text)
                 {
                     token = new Token(currentType, content.ToString());
@@ -78,6 +77,12 @@ namespace HashScript
             result.Add(new Token(TokenType.EndOfStream));
            
             return result;
+        }
+
+        static TokenType BuildType(int charIndex)
+        {
+            charIndex = charIndex == '\r' ? '\n' : charIndex;
+            return Enum.IsDefined((TokenType)charIndex) ? (TokenType)charIndex :TokenType.Text;
         }
     }
 }
