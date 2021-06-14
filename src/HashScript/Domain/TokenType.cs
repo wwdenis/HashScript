@@ -11,6 +11,7 @@ namespace HashScript.Domain
         Space = ' ',
         Hash = '#',
         Complex = '+',
+        Dot = '.',
         Condition = '?',
         Negate = '!',
         Content = '$',
