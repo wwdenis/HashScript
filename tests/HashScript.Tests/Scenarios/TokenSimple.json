@@ -1,0 +1,12 @@
+[
+  { "content": " ", "expected": "Space" },
+  { "content": "\t", "expected": "Tab" },
+  { "content": "\n", "expected": "NewLine" },
+  { "content": "\r\n", "expected": "NewLine" },
+  { "content": "#", "expected": "Hash" },
+  { "content": "+", "expected": "Complex" },
+  { "content": ".", "expected": "Dot" },
+  { "content": "?", "expected": "Condition" },
+  { "content": "!", "expected": "Negate" },
+  { "content": "$", "expected": "Content" }
+]

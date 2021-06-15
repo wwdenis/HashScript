@@ -20,6 +20,7 @@ namespace HashScript.Domain
 
         public Token()
         {
+            this.Content = string.Empty;
         }
 
         public TokenType Type { get; set; }

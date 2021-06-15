@@ -23,4 +23,9 @@
     <ProjectReference Include="..\..\src\HashScript\HashScript.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Scenarios\TokenMulti.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Scenarios\TokenSimple.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

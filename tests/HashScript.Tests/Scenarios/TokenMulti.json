@@ -1,0 +1,113 @@
+[
+  {
+    "content": "##",
+    "expected": [
+      { "Type": "Hash" },
+      { "Type": "Hash" },
+      { "Type": "EndOfStream" }
+    ]
+  },
+  {
+    "content": "+++",
+    "expected": [
+      { "Type": "Complex" },
+      { "Type": "Complex" },
+      { "Type": "Complex" },
+      { "Type": "EndOfStream" }
+    ]
+  },
+  {
+    "content": "!!$$",
+    "expected": [
+      { "Type": "Negate" },
+      { "Type": "Negate" },
+      { "Type": "Content" },
+      { "Type": "Content" },
+      { "Type": "EndOfStream" }
+    ]
+  },
+  {
+    "content": "abc",
+    "expected": [
+      { "Content": "abc" },
+      { "Type": "EndOfStream" }
+    ]
+  },
+  {
+    "content": "first second",
+    "expected": [
+      { "Content": "first" },
+      { "Type": "Space" },
+      { "Content": "second" },
+      { "Type": "EndOfStream" }
+    ]
+  },
+  {
+    "content": "first\tsecond",
+    "expected": [
+      { "Content": "first" },
+      { "Type": "Tab" },
+      { "Content": "second" },
+      { "Type": "EndOfStream" }
+    ]
+  },
+  {
+    "content": "first\nsecond",
+    "expected": [
+      { "Content": "first" },
+      { "Type": "NewLine" },
+      { "Content": "second" },
+      { "Type": "EndOfStream" }
+    ]
+  },
+  {
+    "content": "first\r\nsecond",
+    "expected": [
+      { "Content": "first" },
+      { "Type": "NewLine" },
+      { "Content": "second" },
+      { "Type": "EndOfStream" }
+    ]
+  },
+  {
+    "content": "##first##",
+    "expected": [
+      { "Type": "Hash" },
+      { "Type": "Hash" },
+      { "Content": "first" },
+      { "Type": "Hash" },
+      { "Type": "Hash" },
+      { "Type": "EndOfStream" }
+    ]
+  },
+  {
+
+    "content": "Good Morning Mr. #UserName#.\n\n\nToday  is\t\t#$#",
+    "expected": [
+      { "Content": "Good" },
+      { "Type": "Space" },
+      { "Content": "Morning" },
+      { "Type": "Space" },
+      { "Content": "Mr" },
+      { "Type": "Dot" },
+      { "Type": "Space" },
+      { "Type": "Hash" },
+      { "Content": "UserName" },
+      { "Type": "Hash" },
+      { "Type": "Dot" },
+      { "Type": "NewLine" },
+      { "Type": "NewLine" },
+      { "Type": "NewLine" },
+      { "Content": "Today" },
+      { "Type": "Space" },
+      { "Type": "Space" },
+      { "Content": "is" },
+      { "Type": "Tab" },
+      { "Type": "Tab" },
+      { "Type": "Hash" },
+      { "Type": "Content" },
+      { "Type": "Hash" },
+      { "Type": "EndOfStream" }
+    ]
+  }
+]
