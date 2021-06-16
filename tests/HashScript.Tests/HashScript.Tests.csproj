@@ -24,8 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Scenarios\TokenMulti.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="Scenarios\TokenSimple.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Scenarios\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
