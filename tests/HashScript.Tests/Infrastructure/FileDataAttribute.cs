@@ -74,9 +74,9 @@ namespace HashScript.Tests.Infrastructure
                     var type = args[arg.Key];
                     var value = arg.Value;
 
-                    if (value is JArray arr)
+                    if (value is JContainer obj)
                     {
-                        value = arr.ToObject(type);
+                        value = obj.ToObject(type);
                     }
                     else if (type.IsEnum && Enum.TryParse(type, (string)value, out var enumValue))
                     {
