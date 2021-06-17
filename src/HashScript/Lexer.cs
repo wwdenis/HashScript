@@ -9,8 +9,9 @@ namespace HashScript
 {
     public sealed class Lexer : IDisposable
     {
-        readonly StringReader reader;
+        const char ReturnChar = '\r';
 
+        readonly StringReader reader;
         public Lexer(string content)
         {
             if (string.IsNullOrEmpty(content))
@@ -38,12 +39,12 @@ namespace HashScript
 
             var result = new List<Token>();
             var content = new StringBuilder();
-            var current = -1;
-            Token token = null;
+            var length = 0;
+            int current;
 
             while ((current = reader.Read()) >= 0)
             {
-                if (current == '\r')
+                if (current == ReturnChar)
                 {
                     continue;
                 }
@@ -51,26 +52,40 @@ namespace HashScript
                 var next = reader.Peek();
                 var currentType = BuildType(current);
                 var nextType = BuildType(next);
+                
+                var createToken = false;
 
-                if (currentType == TokenType.Text)
+                switch (currentType)
                 {
-                    content.Append((char)current);
-                }
-                else
-                {
-                    token = new Token(currentType);
+                    case TokenType.Text:
+                    case TokenType.NewLine:
+                    case TokenType.Tab:
+                    case TokenType.Space:
+                        length++;
+                        createToken = currentType != nextType;
+                        if (currentType == TokenType.Text)
+                        {
+                            content.Append((char)current);
+                        }
+                        break;
+                    case TokenType.Hash:
+                    case TokenType.Complex:
+                    case TokenType.Dot:
+                    case TokenType.Condition:
+                    case TokenType.Negate:
+                    case TokenType.Content:
+                        length = 1;
+                        createToken = true;
+                        break;
                 }
 
-                if (nextType != TokenType.Text)
+                if (createToken)
                 {
-                    token = new Token(currentType, content.ToString());
-                }
-
-                if (token is not null)
-                {
+                    var token = new Token(currentType, content.ToString(), length);
                     result.Add(token);
+
+                    length = 0;
                     content.Clear();
-                    token = null;
                 }
             }
 

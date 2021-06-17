@@ -2,112 +2,132 @@
   {
     "content": "##",
     "expected": [
-      { "Type": "Hash" },
-      { "Type": "Hash" },
-      { "Type": "EndOfStream" }
+      { "Type": "Hash", "Length": 1 },
+      { "Type": "Hash", "Length": 1 },
+      { "Type": "EndOfStream", "Length": 1 }
     ]
   },
   {
     "content": "+++",
     "expected": [
-      { "Type": "Complex" },
-      { "Type": "Complex" },
-      { "Type": "Complex" },
-      { "Type": "EndOfStream" }
+      { "Type": "Complex", "Length": 1 },
+      { "Type": "Complex", "Length": 1 },
+      { "Type": "Complex", "Length": 1 },
+      { "Type": "EndOfStream", "Length": 1 }
     ]
   },
   {
-    "content": "!!$$",
+    "content": "!!$$??",
     "expected": [
-      { "Type": "Negate" },
-      { "Type": "Negate" },
-      { "Type": "Content" },
-      { "Type": "Content" },
-      { "Type": "EndOfStream" }
+      { "Type": "Negate", "Length": 1 },
+      { "Type": "Negate", "Length": 1 },
+      { "Type": "Content", "Length": 1 },
+      { "Type": "Content", "Length": 1 },
+      { "Type": "Question", "Length": 1 },
+      { "Type": "Question", "Length": 1 },
+      { "Type": "EndOfStream", "Length": 1 }
+    ]
+  },
+  {
+    "content": "        ",
+    "expected": [
+      { "Type": "Space", "Length": 8 },
+      { "Type": "EndOfStream", "Length": 1 }
+    ]
+  },
+
+  {
+    "content": "\t\t\t\t",
+    "expected": [
+      { "Type": "Tab", "Length": 4 },
+      { "Type": "EndOfStream", "Length": 1 }
+    ]
+  },
+  {
+    "content": "\n\n\n\n\n\n",
+    "expected": [
+      { "Type": "NewLine", "Length": 6 },
+      { "Type": "EndOfStream", "Length": 1 }
     ]
   },
   {
     "content": "abc",
     "expected": [
-      { "Content": "abc" },
-      { "Type": "EndOfStream" }
+      { "Type": "Text", "Length": 3, "Content": "abc" },
+      { "Type": "EndOfStream", "Length": 1 }
     ]
   },
   {
     "content": "first second",
     "expected": [
-      { "Content": "first" },
-      { "Type": "Space" },
-      { "Content": "second" },
-      { "Type": "EndOfStream" }
+      { "Type": "Text", "Length": 5, "Content": "first" },
+      { "Type": "Space", "Length": 1 },
+      { "Type": "Text", "Length": 6, "Content": "second" },
+      { "Type": "EndOfStream", "Length": 1 }
     ]
   },
   {
     "content": "first\tsecond",
     "expected": [
-      { "Content": "first" },
-      { "Type": "Tab" },
-      { "Content": "second" },
-      { "Type": "EndOfStream" }
+      { "Type": "Text", "Length": 5, "Content": "first" },
+      { "Type": "Tab", "Length": 1 },
+      { "Type": "Text", "Length": 6, "Content": "second" },
+      { "Type": "EndOfStream", "Length": 1 }
     ]
   },
   {
     "content": "first\nsecond",
     "expected": [
-      { "Content": "first" },
-      { "Type": "NewLine" },
-      { "Content": "second" },
-      { "Type": "EndOfStream" }
+      { "Type": "Text", "Length": 5, "Content": "first" },
+      { "Type": "NewLine", "Length": 1 },
+      { "Type": "Text", "Length": 6, "Content": "second" },
+      { "Type": "EndOfStream", "Length": 1 }
     ]
   },
   {
     "content": "first\r\nsecond",
     "expected": [
-      { "Content": "first" },
-      { "Type": "NewLine" },
-      { "Content": "second" },
-      { "Type": "EndOfStream" }
+      { "Type": "Text", "Length": 5, "Content": "first" },
+      { "Type": "NewLine", "Length": 1 },
+      { "Type": "Text", "Length": 6, "Content": "second" },
+      { "Type": "EndOfStream", "Length": 1 }
     ]
   },
   {
     "content": "##first##",
     "expected": [
-      { "Type": "Hash" },
-      { "Type": "Hash" },
-      { "Content": "first" },
-      { "Type": "Hash" },
-      { "Type": "Hash" },
-      { "Type": "EndOfStream" }
+      { "Type": "Hash", "Length": 1 },
+      { "Type": "Hash", "Length": 1 },
+      { "Type": "Text", "Length": 5, "Content": "first" },
+      { "Type": "Hash", "Length": 1 },
+      { "Type": "Hash", "Length": 1 },
+      { "Type": "EndOfStream", "Length": 1 }
     ]
   },
   {
 
     "content": "Good Morning Mr. #UserName#.\n\n\nToday  is\t\t#$#",
     "expected": [
-      { "Content": "Good" },
-      { "Type": "Space" },
-      { "Content": "Morning" },
-      { "Type": "Space" },
-      { "Content": "Mr" },
-      { "Type": "Dot" },
-      { "Type": "Space" },
-      { "Type": "Hash" },
-      { "Content": "UserName" },
-      { "Type": "Hash" },
-      { "Type": "Dot" },
-      { "Type": "NewLine" },
-      { "Type": "NewLine" },
-      { "Type": "NewLine" },
-      { "Content": "Today" },
-      { "Type": "Space" },
-      { "Type": "Space" },
-      { "Content": "is" },
-      { "Type": "Tab" },
-      { "Type": "Tab" },
-      { "Type": "Hash" },
-      { "Type": "Content" },
-      { "Type": "Hash" },
-      { "Type": "EndOfStream" }
+      { "Type": "Text", "Length": 4, "Content": "Good" },
+      { "Type": "Space", "Length": 1 },
+      { "Type": "Text", "Length": 7, "Content": "Morning" },
+      { "Type": "Space", "Length": 1 },
+      { "Type": "Text", "Length": 2, "Content": "Mr" },
+      { "Type": "Dot", "Length": 1 },
+      { "Type": "Space", "Length": 1 },
+      { "Type": "Hash", "Length": 1 },
+      { "Type": "Text", "Length": 8, "Content": "UserName" },
+      { "Type": "Hash", "Length": 1 },
+      { "Type": "Dot", "Length": 1 },
+      { "Type": "NewLine", "Length": 3 },
+      { "Type": "Text", "Length": 5, "Content": "Today" },
+      { "Type": "Space", "Length": 2 },
+      { "Type": "Text", "Length": 2, "Content": "is" },
+      { "Type": "Tab", "Length": 2 },
+      { "Type": "Hash", "Length": 1 },
+      { "Type": "Content", "Length": 1 },
+      { "Type": "Hash", "Length": 1 },
+      { "Type": "EndOfStream", "Length": 1 }
     ]
   }
 ]
