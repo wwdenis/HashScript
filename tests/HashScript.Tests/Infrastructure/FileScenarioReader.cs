@@ -7,10 +7,16 @@ namespace HashScript.Tests.Infrastructure
         private const string RootFolder = "Scenarios";
 
         private const string DefaultExtension = ".json";
+        private readonly string fileName;
 
-        public string Read(string fileName)
+        public FileScenarioReader(string fileName)
         {
-            var fullPath = Path.Combine(RootFolder, fileName);
+            this.fileName = fileName;
+        }
+
+        public string Read()
+        {
+            var fullPath = Path.Combine(RootFolder, this.fileName);
 
             if (!Path.HasExtension(fullPath))
             {

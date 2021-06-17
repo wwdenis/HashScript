@@ -1,51 +1,99 @@
 using FluentAssertions;
 using HashScript.Domain;
 using HashScript.Tests.Infrastructure;
-using Newtonsoft.Json;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Xunit;
 
 namespace HashScript.Tests
 {
     public class FileDataAttributeTests
     {
-        [Fact]
-        public void Can_GetData()
+        public static readonly TheoryData ValueScenarios = new TheoryData<Delegate, string, object[][]>
         {
-            Action<string, FakeNode> lambda = (content, expected) => { };
-
-            var children = new[]
             {
-                new FakeNode("One", NodeType.Field),
-                new FakeNode("Two", NodeType.Field),
-                new FakeNode("Three", NodeType.Field),
-            };
-
-            var root = new FakeNode("Parent", NodeType.Document, children);
-
-            var scenarios = new[]
-            {
-                new Dictionary<string, object>
+                new Action<string, int, MyEnum>((text, number, enumeration) => { }),
+                @"[{
+                    'text': 'ABC',
+                    'number': 10,
+                    'enumeration': 'First'
+                }]",
+                new object[][]
                 {
-                    { "content", "ABC" },
-                    { "expected", root },
+                    new object[]{ "ABC", 10, MyEnum.First },
                 }
-            };
+            },
+        };
 
-            var expected = new object[][]
+        public static readonly TheoryData ArrayScenarios = new TheoryData<Delegate, string, object[][]>
+        {
             {
-                new object[] { "ABC", root }
-            };
+                new Action<string[], int[]>((strings, numbers) => { }),
+                @"[{
+                    'strings': [ 'A', 'B', 'C' ],
+                    'numbers': [ 1, 2, 3 ]
+                }]",
+                new object[][]
+                {
+                    new object[]{ new[] { "A", "B", "C" } , new[] { 1, 2, 3 } },
+                }
+            },
+        };
 
-            var reader = BuildReader(scenarios);
+        public static readonly TheoryData ObjectScenarios = new TheoryData<Delegate, string, object[][]>
+        {
+            {
+                new Action<string, FakeNode>((content, expected) => { }),
+                @"[{
+                    'content': 'ABC',
+                    'expected': {
+                        '$id': '1',
+                        'Content': 'Parent',
+                        'Type': 'Document',
+                        'Children': [
+                            { 'Content': 'One', 'Type': 'Field', 'Parent': { '$ref': '1' } },
+                            { 'Content': 'Two', 'Type': 'Field', 'Parent': { '$ref': '1' } },
+                            { 'Content': 'Three', 'Type': 'Field', 'Parent': { '$ref': '1' } }
+                        ]
+                    }
+                }]",
+                new object[][]
+                {
+                    new object[]
+                    {
+                        "ABC",
+                        new FakeNode("Parent", NodeType.Document)
+                        {
+                            Children = new List<FakeNode>
+                            {
+                                new FakeNode("One", NodeType.Field),
+                                new FakeNode("Two", NodeType.Field),
+                                new FakeNode("Three", NodeType.Field),
+                            }
+                        }
+                    },
+                }
+            }
+        };
+
+        public enum MyEnum
+        {
+            First = 1,
+            Second = 2,
+        }
+
+        [Theory]
+        [MemberData(nameof(ValueScenarios))]
+        [MemberData(nameof(ArrayScenarios))]
+        [MemberData(nameof(ObjectScenarios))]
+        public void Can_Parse_Objects(Delegate action, string scenario, object[][] expected)
+        {
+            var reader = BuildReader(scenario);
             
             var subject = new FileDataAttribute(reader);
 
-            var result = subject.GetData(lambda.Method);
+            var result = subject.GetData(action.Method);
 
             result
                 .Should()
@@ -54,21 +102,12 @@ namespace HashScript.Tests
                     opts => opts.IgnoringCyclicReferences());
         }
 
-        private static IScenarioReader BuildReader(object value)
+        private static IScenarioReader BuildReader(string scenario)
         {
-            var settings = new JsonSerializerSettings()
-            {
-                Formatting = Formatting.Indented,
-                TypeNameHandling = TypeNameHandling.Auto,
-                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-                ObjectCreationHandling = ObjectCreationHandling.Auto
-            };
+            scenario = scenario.Replace(@"'", @"""");
 
-            var contents = JsonConvert.SerializeObject(value, settings);
-            
             var reader = Substitute.For<IScenarioReader>();
-            reader.Read(default).ReturnsForAnyArgs(contents);
+            reader.Read().ReturnsForAnyArgs(scenario);
             return reader;
         }
     }

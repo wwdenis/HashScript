@@ -2,6 +2,6 @@
 {
     public interface IScenarioReader
     {
-        string Read(string fileName);
+        string Read();
     }
 }

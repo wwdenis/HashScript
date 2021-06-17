@@ -1,13 +1,13 @@
 ﻿using HashScript.Domain;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace HashScript.Tests.Infrastructure
 {
-    [JsonObject(IsReference = true)]
     public class FakeNode
     {
+        private List<FakeNode> children = new();
+
         public FakeNode()
         {
             this.Children = new List<FakeNode>();
@@ -28,10 +28,6 @@ namespace HashScript.Tests.Infrastructure
         {
             if (children is not null)
             {
-                foreach (var item in children)
-                {
-                    item.Parent = this;
-                }
                 this.Children = children.ToList();
             }
         }
@@ -40,11 +36,23 @@ namespace HashScript.Tests.Infrastructure
 
         public NodeType Type { get; set; }
 
-        [JsonProperty(TypeNameHandling = TypeNameHandling.Objects)]
         public FakeNode Parent { get; set; }
 
-        [JsonProperty(TypeNameHandling = TypeNameHandling.Objects)]
-        public List<FakeNode> Children { get; set; }
+        public List<FakeNode> Children
+        {
+            get
+            {
+                return children;
+            }
+            set
+            {
+                children = value ?? new List<FakeNode>();
+                foreach (var item in children)
+                {
+                    item.Parent = this;
+                }
+            }
+        }
 
         public override string ToString()
         {
