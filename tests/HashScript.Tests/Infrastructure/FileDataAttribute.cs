@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
@@ -11,13 +10,15 @@ namespace HashScript.Tests.Infrastructure
 {
     public class FileDataAttribute : DataAttribute
     {
-        private const string RootFolder = "Scenarios";
-
-        private const string DefaultExtension = ".json";
-
         private readonly string fileName;
+        private readonly IScenarioReader reader;
 
-        public FileDataAttribute(string fileName)
+        internal FileDataAttribute(IScenarioReader reader)
+        {
+            this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
+        }
+
+        public FileDataAttribute(string fileName) : this(new FileScenarioReader())
         {
             if (string.IsNullOrWhiteSpace(fileName))
             {
@@ -29,67 +30,100 @@ namespace HashScript.Tests.Infrastructure
 
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            if (testMethod is null)
+            try
             {
-                throw new ArgumentNullException(nameof(testMethod));
+                var contents = this.reader.Read(this.fileName);
+                var result = ParseTestArguments(contents, testMethod);
+                return result;
             }
-
-            var contents = ReadContents(this.fileName);
-            var result = ParseTestArguments(contents, testMethod);
-
-            return result;
-        }
-
-        private static string ReadContents(string fileName)
-        {
-            var fullPath = Path.Combine(RootFolder, fileName);
-
-            if (!Path.HasExtension(fullPath))
+            catch
             {
-                fullPath = Path.ChangeExtension(fullPath, DefaultExtension);
+                return null;
             }
-
-            if (!File.Exists(fullPath))
-            {
-                throw new FileNotFoundException("Scenario file does not exist.", fullPath);
-            }
-
-            var contents = File.ReadAllText(fullPath);
-            return contents;
         }
 
         private static List<object[]> ParseTestArguments(string contents, MethodInfo testMethod)
         {
             var result = new List<object[]>();
+            
+            var args = testMethod
+                .GetParameters()
+                .ToDictionary(k => k.Name, v => v.ParameterType);
 
-            var scenarios = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(contents);
-            var args = testMethod.GetParameters().ToDictionary(k => k.Name, v => v.ParameterType);
+            var scenarios = DeserializeScenarios(contents);
+            var fileError = scenarios is null || scenarios.Any(i => i.Keys.Except(args.Keys).Any());
 
-            foreach (var item in scenarios)
+            if (fileError)
+            {
+                return result;
+            }
+
+            foreach (var scenario in scenarios)
             {
                 var values = new List<object>();
-
-                foreach (var arg in item)
+                
+                foreach (var parameter in scenario)
                 {
-                    var type = args[arg.Key];
-                    var value = arg.Value;
+                    var error = false;
+                    var type = args[parameter.Key];
+                    var value = parameter.Value;
 
-                    if (value is JContainer obj)
+                    if (value is JToken)
                     {
-                        value = obj.ToObject(type);
+                        var text = value.ToString();
+                        value = DeserializeValue(text, type, out error);
                     }
                     else if (type.IsEnum && Enum.TryParse(type, (string)value, out var enumValue))
                     {
                         value = enumValue;
                     }
 
+                    if (error)
+                    {
+                        values = null;
+                        continue;
+                    }
+
                     values.Add(value);
                 }
 
-                result.Add(values.ToArray());
+                if (values is not null)
+                {
+                    result.Add(values.ToArray());
+                }
             }
 
             return result;
+        }
+
+        private static List<Dictionary<string, object>> DeserializeScenarios(string contents)
+        {
+            var type = typeof(List<Dictionary<string, object>>);
+            var result = DeserializeValue(contents, type, out _);
+            return result as List<Dictionary<string, object>>;
+        }
+
+        private static object DeserializeValue(string contents, Type type, out bool hasErrors)
+        {
+            var parsingErrors = false;
+
+            var settings = new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                ObjectCreationHandling = ObjectCreationHandling.Auto,
+                Error = (sender, args) => {
+                    parsingErrors = true;
+                    args.ErrorContext.Handled = true;
+                },
+            };
+
+            var value = JsonConvert.DeserializeObject(contents, type, settings);
+
+            hasErrors = parsingErrors;
+
+            return value;
         }
     }
 }
