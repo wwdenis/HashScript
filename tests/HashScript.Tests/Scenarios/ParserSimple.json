@@ -1,8 +1,18 @@
 [
   {
-    "content": "abc",
+    "template": "ABC",
     "expected": {
-      "Type":  "Document"
+      "$id": "1",
+      "Type": "Document",
+      "Children": [
+        {
+          "Content": "ABC",
+          "Type": "Text",
+          "Parent": {
+            "$ref": "1"
+          }
+        }
+      ]
     }
   }
 ]

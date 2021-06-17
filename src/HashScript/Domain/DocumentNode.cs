@@ -1,13 +1,17 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace HashScript.Domain
 {
     public sealed class DocumentNode : Node
     {
-        public DocumentNode()
+        public DocumentNode() : base()
         {
-            this.Type = NodeType.Document;
         }
+
+        public DocumentNode(IEnumerable<Node> nodes) : base(nodes)
+        {
+        }
+
+        public override NodeType Type => NodeType.Document;
     }
 }

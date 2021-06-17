@@ -8,16 +8,18 @@ namespace HashScript.Tests
     {
         [Theory]
         [FileData("ParserSimple")]
-        public void Can_Parse_Simple(string content, FakeNode expected)
+        public void Can_Parse_Simple(string template, FakeNode expected)
         {
-            var subject = new Parser();
-            var result = subject.Parse(content);
+            var subject = new Parser(template);
+            var result = subject.Parse();
 
             result
                 .Should()
                 .BeEquivalentTo(
                     expected,
-                    opts => opts.IgnoringCyclicReferences());
+                    opts => opts
+                        .ExcludingMissingMembers()
+                        .IgnoringCyclicReferences());
         }
     }
 }

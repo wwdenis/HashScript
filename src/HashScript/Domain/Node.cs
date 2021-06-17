@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HashScript.Domain
 {
@@ -6,16 +7,18 @@ namespace HashScript.Domain
     {
         public Node()
         {
-            this.Children = new List<Node>();
         }
 
-        public string Content { get; set; }
+        public Node(IEnumerable<Node> nodes)
+        {
+            this.Children = nodes?.ToList() ?? new List<Node>();
+        }
 
-        public NodeType Type { get; set; }
+        public abstract NodeType Type { get; }
 
         public Node Parent { get; set; }
 
-        public List<Node> Children { get; }
+        public List<Node> Children { get; } = new List<Node>();
 
         public override string ToString()
         {
