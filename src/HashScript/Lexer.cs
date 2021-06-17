@@ -73,7 +73,7 @@ namespace HashScript
                     case TokenType.Dot:
                     case TokenType.Condition:
                     case TokenType.Negate:
-                    case TokenType.Content:
+                    case TokenType.Reference:
                         length = 1;
                         createToken = true;
                         break;
@@ -89,7 +89,7 @@ namespace HashScript
                 }
             }
 
-            result.Add(new Token(TokenType.EndOfStream));
+            result.Add(new Token(TokenType.EOF));
            
             return result;
         }

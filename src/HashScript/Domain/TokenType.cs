@@ -4,7 +4,7 @@ namespace HashScript.Domain
 {
     public enum TokenType : int
     {
-        EndOfStream = -1,
+        EOF = -1,
         Text = 0,
         NewLine = '\n',
         Tab = '\t',
@@ -14,6 +14,6 @@ namespace HashScript.Domain
         Dot = '.',
         Condition = '?',
         Negate = '!',
-        Content = '$',
+        Reference = '$',
     }
 }

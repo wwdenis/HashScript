@@ -8,5 +8,5 @@
   { "content": ".", "expected": "Dot" },
   { "content": "?", "expected": "Condition" },
   { "content": "!", "expected": "Negate" },
-  { "content": "$", "expected": "Content" }
+  { "content": "$", "expected": "Reference" }
 ]

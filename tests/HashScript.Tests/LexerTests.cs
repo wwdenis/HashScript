@@ -14,7 +14,7 @@ namespace HashScript.Tests
             var expectedTypes = new[]
             {
                 new Token(expected),
-                new Token(TokenType.EndOfStream),
+                new Token(TokenType.EOF),
             };
 
             var subject = new Lexer(content);
