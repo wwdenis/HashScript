@@ -4,7 +4,7 @@
         {
             "label": "build",
             "command": "dotnet",
-            "type": "shell",
+            "type": "process",
             "args": [
                 "build",
                 "/property:GenerateFullPaths=true",
@@ -15,19 +15,26 @@
                 "reveal": "always"
             },
             "problemMatcher": "$msCompile"
-        }, {
-            "label": "clean",
+        },
+        {
+            "label": "watch",
             "command": "dotnet",
-            "type": "shell",
+            "type": "process",
             "args": [
-                "clean",
+                "watch",
+                "run",
+                "${workspaceFolder}/tests/HashScript.Harness/HashScript.Harness.csproj",
+                "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
             "group": "build",
             "presentation": {
                 "reveal": "always"
             },
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "options": { 
+                "cwd": "${workspaceFolder}/tests/HashScript.Harness" 
+            },
         }
     ]
 }
