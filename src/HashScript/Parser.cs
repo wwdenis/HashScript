@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using HashScript.Domain;
@@ -29,46 +28,17 @@ namespace HashScript
             var queue = new Queue<Token>();
             var type = NodeType.Text;
 
-            var hashStarted = false;
-
             while (tokens.Any())
             {
                 var current = tokens.Dequeue();
                 var next = tokens.Peek();
 
-                var appentToken = !queue.Any();
+                var currentType = MapType(current.Type);
+                var nextType = MapType(next.Type);
 
-                switch (current.Type)
-                {
-                    case TokenType.Text:
-                        break;
-                    case TokenType.NewLine:
-                        break;
-                    case TokenType.Tab:
-                        break;
-                    case TokenType.Space:
-                        break;
-                    case TokenType.Hash:
-                        hashStarted = !hashStarted;
-                        break;
-                    case TokenType.Complex:
-                        break;
-                    case TokenType.Dot:
-                        break;
-                    case TokenType.Condition:
-                        break;
-                    case TokenType.Negate:
-                        break;
-                    case TokenType.Reference:
-                        break;
-                }
+                queue.Enqueue(current);
 
-                if (appentToken)
-                {
-                    queue.Enqueue(current);
-                }
-                
-                if (next.Type != current.Type)
+                if (nextType != currentType)
                 {
                     var node = BuildNode(type, queue);
                     nodes.Add(node);
@@ -86,13 +56,29 @@ namespace HashScript
             return doc;
         }
 
-        private static Node BuildNode(NodeType nodeType, Queue<Token> nodeStack)
+        private static NodeType MapType(TokenType tokenType)
+        {
+            return tokenType switch 
+            {
+                TokenType.Text  => NodeType.Text,
+                TokenType.Space => NodeType.Text,
+                TokenType.NewLine => NodeType.Text,
+                TokenType.EOF => NodeType.None,
+                _ => throw new ArgumentException($"Invalid TokenType: {tokenType}", nameof(tokenType)),
+            };
+        }
+
+        private static Node BuildNode(NodeType nodeType, Queue<Token> tokens)
         {
             switch (nodeType)
             {
                 case NodeType.Text:
-                    var content = string.Join("", nodeStack.Select(i => i.Content));
-                    return new TextNode(content);
+                    var allContent = from i in tokens
+                                     let tokenChar = (char)i.Type
+                                     let content = string.IsNullOrEmpty(i.Content) ? new string(tokenChar, i.Length) : i.Content
+                                     select content;
+                    var textContent = string.Join("", allContent);
+                    return new TextNode(textContent);
                 case NodeType.Field:
                     return new FieldNode();
                 default:

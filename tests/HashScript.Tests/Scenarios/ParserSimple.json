@@ -14,5 +14,21 @@
         }
       ]
     }
+  },
+  {
+    "template": "FIRST  SECOND\nTHIRD",
+    "expected": {
+      "$id": "1",
+      "Type": "Document",
+      "Children": [
+        {
+          "Content": "FIRST  SECOND\nTHIRD",
+          "Type": "Text",
+          "Parent": {
+            "$ref": "1"
+          }
+        }
+      ]
+    }
   }
 ]
