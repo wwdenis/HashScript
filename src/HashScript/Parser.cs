@@ -26,26 +26,18 @@ namespace HashScript
             var tokens = new Queue<Token>(content);
 
             var queue = new Queue<Token>();
-            var type = NodeType.Text;
 
             while (tokens.Any())
             {
-                var current = tokens.Dequeue();
-                var next = tokens.Peek();
-
-                var currentType = MapType(current.Type);
-                var nextType = MapType(next.Type);
-
-                queue.Enqueue(current);
-
-                if (nextType != currentType)
+                if (TryParseField(tokens, out var fieldNode))
                 {
-                    var node = BuildNode(type, queue);
-                    nodes.Add(node);
-                    queue.Clear();
+                    nodes.Add(fieldNode);
                 }
-
-                if (next.Type == TokenType.EOF)
+                else if (TryParseText(tokens, out var textNode))
+                {
+                    nodes.Add(textNode);
+                }
+                else 
                 {
                     break;
                 }
@@ -56,34 +48,65 @@ namespace HashScript
             return doc;
         }
 
-        private static NodeType MapType(TokenType tokenType)
+        private bool TryParseField(Queue<Token> tokens, out FieldNode node)
         {
-            return tokenType switch 
+            node = null;
+            return false;
+        }
+
+        private bool TryParseText(Queue<Token> tokens, out TextNode node)
+        {
+            var queue = new Queue<Token>();
+            var content = string.Empty;
+
+            while (tokens.Any())
+            {
+                var current = tokens.Dequeue();
+                var type = MapType(current);
+                
+                if (type != NodeType.Text)
+                {
+                    content = BuildTextContent(queue);
+                    break;
+                }
+
+                queue.Enqueue(current);
+            }
+
+            if (string.IsNullOrEmpty(content))
+            {
+                node = null;
+                return false;
+            }
+
+            node = new TextNode(content);
+            return true;
+        }
+
+        private static NodeType MapType(Token token)
+        {
+            return token.Type switch 
             {
                 TokenType.Text  => NodeType.Text,
                 TokenType.Space => NodeType.Text,
                 TokenType.NewLine => NodeType.Text,
                 TokenType.EOF => NodeType.None,
-                _ => throw new ArgumentException($"Invalid TokenType: {tokenType}", nameof(tokenType)),
+                _ => throw new ArgumentException($"Invalid TokenType: {token.Type}", nameof(token)),
             };
         }
 
-        private static Node BuildNode(NodeType nodeType, Queue<Token> tokens)
+        private static string BuildTextContent(Queue<Token> tokens)
         {
-            switch (nodeType)
+            if (!tokens.Any())
             {
-                case NodeType.Text:
-                    var allContent = from i in tokens
-                                     let tokenChar = (char)i.Type
-                                     let content = string.IsNullOrEmpty(i.Content) ? new string(tokenChar, i.Length) : i.Content
-                                     select content;
-                    var textContent = string.Join("", allContent);
-                    return new TextNode(textContent);
-                case NodeType.Field:
-                    return new FieldNode();
-                default:
-                    throw new ArgumentException($"Invalid NodeType: {nodeType}", nameof(nodeType));
+                return null;
             }
+
+            var allContent = from i in tokens
+                             let tokenChar = (char)i.Type
+                             let content = string.IsNullOrEmpty(i.Content) ? new string(tokenChar, i.Length) : i.Content
+                             select content;
+            return string.Join("", allContent);
         }
     }
 }
