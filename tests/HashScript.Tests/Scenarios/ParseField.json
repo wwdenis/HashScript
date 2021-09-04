@@ -1,0 +1,51 @@
+[
+  {
+    "template": "#Name#",
+    "expected": {
+      "$id": "1",
+      "Type": "Document",
+      "Children": [
+        {
+          "Name": "Name",
+          "Type": "Field",
+          "Parent": {
+            "$ref": "1"
+          }
+        }
+      ]
+    }
+  }, {
+    "template": "Hi \t\t\t #Name#!\n\n\nToday is: #Date#",
+    "expected": {
+      "$id": "1",
+      "Type": "Document",
+      "Children": [
+        {
+          "Content": "Hi \t\t\t ",
+          "Type": "Text",
+          "Parent": {
+            "$ref": "1"
+          }
+        }, {
+          "Name": "Name",
+          "Type": "Field",
+          "Parent": {
+            "$ref": "1"
+          }
+        }, {
+          "Content": "\n\n\nToday is: ",
+          "Type": "Text",
+          "Parent": {
+            "$ref": "1"
+          }
+        }, {
+          "Name": "Name",
+          "Type": "Date",
+          "Parent": {
+            "$ref": "1"
+          }
+        }
+      ]
+    }
+  }
+]
