@@ -8,10 +8,13 @@ namespace HashScript.Domain
         {
         }
 
-        public DocumentNode(IEnumerable<Node> nodes) : base(nodes)
+        public DocumentNode(IEnumerable<Node> nodes, IEnumerable<string> errors) : base(nodes)
         {
+            this.Errors = errors ?? new string[0];
         }
 
         public override NodeType Type => NodeType.Document;
+
+        public IEnumerable<string> Errors { get; } 
     }
 }
