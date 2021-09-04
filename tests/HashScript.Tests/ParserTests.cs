@@ -7,8 +7,8 @@ namespace HashScript.Tests
     public class ParserTests
     {
         [Theory]
-        [FileData("ParserSimple")]
-        public void Can_Parse_Simple(string template, FakeNode expected)
+        [FileData("ParseText")]
+        public void Can_Parse_Success(string template, FakeNode expected)
         {
             var subject = new Parser(template);
             var result = subject.Parse();
