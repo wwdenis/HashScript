@@ -13,7 +13,7 @@ namespace HashScript.Domain
             this.Errors = errors ?? new string[0];
         }
 
-        public override NodeType Type => NodeType.Document;
+        public override NodeType NodeType => NodeType.Document;
 
         public IEnumerable<string> Errors { get; } 
     }

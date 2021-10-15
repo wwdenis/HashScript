@@ -18,7 +18,7 @@ namespace HashScript.Domain
             this.Name = name;
         }
 
-        public override NodeType Type => NodeType.Field;
+        public override NodeType NodeType => NodeType.Field;
 
         public string Name { get; set; }
     }

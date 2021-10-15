@@ -14,7 +14,7 @@ namespace HashScript.Domain
             this.Children = nodes?.ToList() ?? new List<Node>();
         }
 
-        public abstract NodeType Type { get; }
+        public abstract NodeType NodeType { get; }
 
         public Node Parent { get; set; }
 
@@ -22,7 +22,7 @@ namespace HashScript.Domain
 
         public override string ToString()
         {
-            return $"{this.Type}";
+            return $"{this.NodeType}";
         }
     }
 }
