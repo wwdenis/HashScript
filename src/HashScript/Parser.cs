@@ -61,14 +61,16 @@ namespace HashScript
 
             var name = string.Empty;
             var error = string.Empty;
-            Token invalid = null;
+            Token current = null;
             
             var hasOpened = false;
             var hasClosed = false;
+            var hasInvalid = false;
 
             while (tokens.Any())
             {
-                var current = tokens.Dequeue();
+                current = tokens.Dequeue();
+                hasInvalid = false;
 
                 if (current.Type == TokenType.Hash)
                 {
@@ -89,23 +91,23 @@ namespace HashScript
                     }
                     else
                     {
-                        invalid = current;
+                        hasInvalid = true;
                     }
                 }
                 else
                 {
-                    invalid = current;
+                    hasInvalid = true;
                 }
                 
-                if (invalid is not null || hasClosed)
+                if (hasInvalid || hasClosed)
                 {
                     break;   
                 }
             }
 
-            if (invalid is not null)
+            if (hasInvalid)
             {
-                error = $"Field contains an invalid character: {GetTokenContent(invalid)}";
+                error = $"Field contains an invalid character: {GetTokenContent(current)}";
             }
             else if (!buffer.Any())
             {
