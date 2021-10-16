@@ -145,7 +145,7 @@ namespace HashScript
             }
             else if (fieldType == FieldType.Simple && string.IsNullOrWhiteSpace(name))
             {
-                errors.Add("Simple Field must contain a valid name");
+                error = "Field must contain a valid name";
             }
             else if (hasChildren && !string.IsNullOrEmpty(name))
             {
