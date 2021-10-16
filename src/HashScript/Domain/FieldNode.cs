@@ -1,24 +1,25 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace HashScript.Domain
 {
     public sealed class FieldNode : Node
     {
-        public FieldNode()
+        public FieldNode(string name, IEnumerable<Node> nodes) : base(nodes)
+        {
+            this.Name = name ?? string.Empty;
+        }
+
+        public FieldNode(string name) : this(name, null)
         {
         }
 
-        public FieldNode(IEnumerable<Node> nodes) : base(nodes)
+        public FieldNode() : this(null)
         {
-        }
-
-        public FieldNode(string name)
-        {
-            this.Name = name;
         }
 
         public override NodeType NodeType => NodeType.Field;
+
+        public FieldType FieldType { get; set; }
 
         public string Name { get; set; }
     }

@@ -21,24 +21,39 @@ namespace HashScript
 
         public DocumentNode Parse()
         {
-            var errors = new List<string>();
-            var nodes = new List<Node>();
             var content = this.lexer.ReadAll();
             var tokens = new Queue<Token>(content);
 
-            var queue = new Queue<Token>();
+            var errors = new List<string>();
+            var children = ParseChildren(tokens, errors);
 
+            var doc = new DocumentNode(children, errors);
+
+            return doc;
+        }
+
+        public List<Node> ParseChildren(Queue<Token> tokens, List<string> errors)
+        {
+            var nodes = new List<Node>();
+            
             while (tokens.Any())
             {
-                Node node = null;
+                FieldNode fieldNode = null;
+                TextNode textNode = null;
 
-                if ((node = ParseField(tokens, errors)) is not null)
+                if ((fieldNode = ParseField(tokens, errors)) is not null)
                 {
-                    nodes.Add(node);
+                    var isClose = string.IsNullOrEmpty(fieldNode.Name);
+                    nodes.Add(fieldNode);
+
+                    if (isClose)
+                    {
+                        break;
+                    }
                 }
-                else if ((node = ParseText(tokens)) is not null)
+                else if ((textNode = ParseText(tokens)) is not null)
                 {
-                    nodes.Add(node);
+                    nodes.Add(textNode);
                 }
                 else
                 {
@@ -46,14 +61,12 @@ namespace HashScript
                 }
             }
 
-            var doc = new DocumentNode(nodes, errors);
-
-            return doc;
+            return nodes;
         }
 
         private FieldNode ParseField(Queue<Token> tokens, List<string> errors)
         {
-            if (!NextContains(tokens, NodeType.Field))
+            if (!tokens.Any() || tokens.Peek().Type != TokenType.Hash)
             {
                 return null;
             }
@@ -66,6 +79,8 @@ namespace HashScript
             var hasStart = false;
             var hasEnd = false;
             var hasInvalid = false;
+            var hasChildren = false;
+            var fieldType = FieldType.Simple;
 
             while (tokens.Any())
             {
@@ -81,6 +96,18 @@ namespace HashScript
                     else
                     {
                         hasStart = true;
+                    }
+                }
+                else if (current.Type == TokenType.Complex)
+                {
+                    if (!hasStart || buffer.Any())
+                    {
+                        hasInvalid = true;
+                    }
+                    else
+                    {
+                        hasChildren = true;
+                        fieldType = FieldType.Complex;
                     }
                 }
                 else if (current.Type == TokenType.Text)
@@ -105,17 +132,34 @@ namespace HashScript
                 }
             }
 
+            var name = BuildContent(buffer);
+            var children = new List<Node>();
+
             if (hasInvalid)
             {
                 error = $"Field contains an invalid character: {GetTokenContent(current)}";
             }
-            else if (!buffer.Any())
-            {
-                error = "Field must contain a valid name";
-            }
             else if (!hasEnd)
             {
                 error = "Field does not contains a close Hash";
+            }
+            else if (fieldType == FieldType.Simple && string.IsNullOrWhiteSpace(name))
+            {
+                errors.Add("Simple Field must contain a valid name");
+            }
+            else if (hasChildren && !string.IsNullOrEmpty(name))
+            {
+                children = ParseChildren(tokens, errors);
+                var last = children.LastOrDefault() as FieldNode;
+
+                if (last is not null && last.FieldType == fieldType && string.IsNullOrEmpty(last.Name))
+                {
+                    children.Remove(last);
+                }
+                else
+                {
+                    error = $"Field '{name}' does not contains a close Node";
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(error))
@@ -124,61 +168,34 @@ namespace HashScript
                 return null;
             }
 
-            var name = BuildContent(buffer);
-            var node = new FieldNode(name);
+            var node = new FieldNode(name, children);
+            node.FieldType = fieldType;
             return node;
         }
 
         private TextNode ParseText(Queue<Token> tokens)
         {
+            var invalidTokens = new[] { TokenType.Hash, TokenType.EOF };
             var buffer = new Queue<Token>();
-            var content = string.Empty;
 
             while (tokens.Any())
             {
-                if (!NextContains(tokens, NodeType.Text))
+                var current = tokens.Dequeue();
+                if (invalidTokens.Contains(current.Type))
                 {
-                    content = BuildContent(buffer);
                     break;
                 }
-
-                var current = tokens.Dequeue();
                 buffer.Enqueue(current);
             }
 
-            if (string.IsNullOrEmpty(content))
+            if (!buffer.Any())
             {
                 return null;
             }
 
+            var content = BuildContent(buffer);
             var node = new TextNode(content);
             return node;
-        }
-
-        private static bool NextContains(Queue<Token> tokens, NodeType expectedType)
-        {
-            var mappings = new Dictionary<TokenType, NodeType> 
-            {
-                { TokenType.Text, NodeType.Text },
-                { TokenType.Space, NodeType.Text },
-                { TokenType.Tab, NodeType.Text },
-                { TokenType.NewLine, NodeType.Text },
-                { TokenType.Hash, NodeType.Field },
-            };
-
-            if (!tokens.Any())
-            {
-                return false;
-            }
-
-            var next = tokens.Peek();
-
-            if (mappings.TryGetValue(next.Type, out var nodeType))
-            {
-                return nodeType == expectedType;
-            }
-
-            return false;
         }
 
         private static string BuildContent(Queue<Token> tokens)
