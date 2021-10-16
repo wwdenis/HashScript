@@ -30,15 +30,17 @@ namespace HashScript
 
             while (tokens.Any())
             {
-                if (TryParseField(tokens, errors, out var fieldNode))
+                Node node = null;
+
+                if ((node = ParseField(tokens, errors)) is not null)
                 {
-                    nodes.Add(fieldNode);
+                    nodes.Add(node);
                 }
-                else if (TryParseText(tokens, out var textNode))
+                else if ((node = ParseText(tokens)) is not null)
                 {
-                    nodes.Add(textNode);
+                    nodes.Add(node);
                 }
-                else 
+                else
                 {
                     break;
                 }
@@ -49,22 +51,20 @@ namespace HashScript
             return doc;
         }
 
-        private bool TryParseField(Queue<Token> tokens, List<string> errors, out FieldNode node)
+        private FieldNode ParseField(Queue<Token> tokens, List<string> errors)
         {
             if (!NextContains(tokens, NodeType.Field))
             {
-                node = null;
-                return false;
+                return null;
             }
 
             var buffer = new Queue<Token>();
 
-            var name = string.Empty;
             var error = string.Empty;
             Token current = null;
             
-            var hasOpened = false;
-            var hasClosed = false;
+            var hasStart = false;
+            var hasEnd = false;
             var hasInvalid = false;
 
             while (tokens.Any())
@@ -74,13 +74,13 @@ namespace HashScript
 
                 if (current.Type == TokenType.Hash)
                 {
-                    if (hasOpened)
+                    if (hasStart)
                     {
-                        hasClosed = true;
+                        hasEnd = true;
                     }
                     else
                     {
-                        hasOpened = true;
+                        hasStart = true;
                     }
                 }
                 else if (current.Type == TokenType.Text)
@@ -99,7 +99,7 @@ namespace HashScript
                     hasInvalid = true;
                 }
                 
-                if (hasInvalid || hasClosed)
+                if (hasInvalid || hasEnd)
                 {
                     break;   
                 }
@@ -113,7 +113,7 @@ namespace HashScript
             {
                 error = "Field must contain a valid name";
             }
-            else if (!hasClosed)
+            else if (!hasEnd)
             {
                 error = "Field does not contains a close Hash";
             }
@@ -121,16 +121,15 @@ namespace HashScript
             if (!string.IsNullOrWhiteSpace(error))
             {
                 errors.Add(error);
-                node = null;
-                return false;
+                return null;
             }
 
-            name = BuildContent(buffer);
-            node = new FieldNode(name);
-            return true;
+            var name = BuildContent(buffer);
+            var node = new FieldNode(name);
+            return node;
         }
 
-        private bool TryParseText(Queue<Token> tokens, out TextNode node)
+        private TextNode ParseText(Queue<Token> tokens)
         {
             var buffer = new Queue<Token>();
             var content = string.Empty;
@@ -149,12 +148,11 @@ namespace HashScript
 
             if (string.IsNullOrEmpty(content))
             {
-                node = null;
-                return false;
+                return null;
             }
 
-            node = new TextNode(content);
-            return true;
+            var node = new TextNode(content);
+            return node;
         }
 
         private static bool NextContains(Queue<Token> tokens, NodeType expectedType)
