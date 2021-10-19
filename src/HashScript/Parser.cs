@@ -25,14 +25,13 @@ namespace HashScript
             var tokens = new Queue<Token>(content);
 
             var errors = new List<string>();
-            var children = ParseChildren(tokens, errors);
-
+            var children = ParseChildren(tokens, errors, parent: null);
             var doc = new DocumentNode(children, errors);
 
             return doc;
         }
 
-        public List<Node> ParseChildren(Queue<Token> tokens, List<string> errors)
+        public List<Node> ParseChildren(Queue<Token> tokens, List<string> errors, FieldNode parent)
         {
             var nodes = new List<Node>();
             
@@ -41,15 +40,9 @@ namespace HashScript
                 FieldNode fieldNode = null;
                 TextNode textNode = null;
 
-                if ((fieldNode = ParseField(tokens, errors)) is not null)
+                if ((fieldNode = ParseField(tokens, errors, parent)) is not null)
                 {
-                    var isClose = string.IsNullOrEmpty(fieldNode.Name);
                     nodes.Add(fieldNode);
-
-                    if (isClose)
-                    {
-                        break;
-                    }
                 }
                 else if ((textNode = ParseText(tokens)) is not null)
                 {
@@ -64,7 +57,7 @@ namespace HashScript
             return nodes;
         }
 
-        private FieldNode ParseField(Queue<Token> tokens, List<string> errors)
+        private FieldNode ParseField(Queue<Token> tokens, List<string> errors, FieldNode parent)
         {
             if (!tokens.Any() || tokens.Peek().Type != TokenType.Hash)
             {
@@ -132,33 +125,32 @@ namespace HashScript
             }
 
             var name = BuildContent(buffer);
-            var children = new List<Node>();
+            var node = new FieldNode(name);
+            node.FieldType = fieldType;
 
             if (hasInvalid)
             {
                 error = $"Field contains an invalid character: {GetTokenContent(current)}";
             }
+            else if (string.IsNullOrEmpty(name))
+            {
+                if (parent?.FieldType == fieldType)
+                {
+                    return null;
+                }
+                else
+                {
+                    error = "Field must contain a valid name";
+                }
+            }
             else if (!hasEnd)
             {
                 error = "Field does not contains a close Hash";
             }
-            else if (fieldType == FieldType.Simple && string.IsNullOrWhiteSpace(name))
+            else if (hasChildren)
             {
-                error = "Field must contain a valid name";
-            }
-            else if (hasChildren && !string.IsNullOrEmpty(name))
-            {
-                children = ParseChildren(tokens, errors);
-                var last = children.LastOrDefault() as FieldNode;
-
-                if (last is not null && last.FieldType == fieldType && string.IsNullOrEmpty(last.Name))
-                {
-                    children.Remove(last);
-                }
-                else
-                {
-                    error = $"Field '{name}' does not contains a close Node";
-                }
+                var children = ParseChildren(tokens, errors, node);
+                node.Children.AddRange(children);
             }
 
             if (!string.IsNullOrWhiteSpace(error))
@@ -167,8 +159,6 @@ namespace HashScript
                 return null;
             }
 
-            var node = new FieldNode(name, children);
-            node.FieldType = fieldType;
             return node;
         }
 
