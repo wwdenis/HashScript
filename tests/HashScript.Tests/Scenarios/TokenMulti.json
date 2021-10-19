@@ -19,12 +19,12 @@
   {
     "content": "!!$$??",
     "expected": [
-      { "Type": "Negate", "Length": 1 },
-      { "Type": "Negate", "Length": 1 },
-      { "Type": "Reference", "Length": 1 },
-      { "Type": "Reference", "Length": 1 },
-      { "Type": "Question", "Length": 1 },
-      { "Type": "Question", "Length": 1 },
+      { "Type": "IsFalse", "Length": 1 },
+      { "Type": "IsFalse", "Length": 1 },
+      { "Type": "Value", "Length": 1 },
+      { "Type": "Value", "Length": 1 },
+      { "Type": "IsTrue", "Length": 1 },
+      { "Type": "IsTrue", "Length": 1 },
       { "Type": "EOF", "Length": 1 }
     ]
   },

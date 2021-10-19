@@ -6,7 +6,7 @@
   { "content": "#", "expected": "Hash" },
   { "content": "+", "expected": "Complex" },
   { "content": ".", "expected": "Dot" },
-  { "content": "?", "expected": "Condition" },
-  { "content": "!", "expected": "Negate" },
-  { "content": "$", "expected": "Reference" }
+  { "content": "?", "expected": "IsTrue" },
+  { "content": "!", "expected": "IsFalse" },
+  { "content": "$", "expected": "Value" }
 ]

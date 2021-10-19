@@ -12,8 +12,8 @@ namespace HashScript.Domain
         Hash = '#',
         Complex = '+',
         Dot = '.',
-        Condition = '?',
-        Negate = '!',
-        Reference = '$',
+        IsTrue = '?',
+        IsFalse = '!',
+        Value = '$',
     }
 }
