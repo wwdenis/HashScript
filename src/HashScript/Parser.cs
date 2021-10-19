@@ -180,11 +180,12 @@ namespace HashScript
 
             while (tokens.Any())
             {
-                var current = tokens.Dequeue();
-                if (invalidTokens.Contains(current.Type))
+                var next = tokens.Peek();
+                if (invalidTokens.Contains(next.Type))
                 {
                     break;
                 }
+                var current = tokens.Dequeue();
                 buffer.Enqueue(current);
             }
 
