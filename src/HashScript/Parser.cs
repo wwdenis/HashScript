@@ -87,43 +87,42 @@ namespace HashScript
                 current = tokens.Dequeue();
                 hasInvalid = false;
 
-                if (current.Type == TokenType.Hash)
+                switch (current.Type)
                 {
-                    if (hasStart)
-                    {
-                        hasEnd = true;
-                    }
-                    else
-                    {
-                        hasStart = true;
-                    }
-                }
-                else if (current.Type == TokenType.Complex)
-                {
-                    if (!hasStart || buffer.Any())
-                    {
+                    case TokenType.Hash:
+                        if (hasStart)
+                        {
+                            hasEnd = true;
+                        }
+                        else
+                        {
+                            hasStart = true;
+                        }
+                        break;
+                    case TokenType.Complex:
+                        if (!hasStart || buffer.Any())
+                        {
+                            hasInvalid = true;
+                        }
+                        else
+                        {
+                            hasChildren = true;
+                            fieldType = GetFieldType(current);
+                        }
+                        break;
+                    case TokenType.Text:
+                        if (HasValidName(current))
+                        {
+                            buffer.Enqueue(current);
+                        }
+                        else
+                        {
+                            hasInvalid = true;
+                        }
+                        break;
+                    default:
                         hasInvalid = true;
-                    }
-                    else
-                    {
-                        hasChildren = true;
-                        fieldType = FieldType.Complex;
-                    }
-                }
-                else if (current.Type == TokenType.Text)
-                {
-                    if (HasValidName(current))
-                    {
-                        buffer.Enqueue(current);
-                    }
-                    else
-                    {
-                        hasInvalid = true;
-                    }
-                }
-                else
-                {
-                    hasInvalid = true;
+                        break;
                 }
                 
                 if (hasInvalid || hasEnd)
@@ -213,7 +212,7 @@ namespace HashScript
             return string.Join("", allContent);
         }
 
-        private string GetTokenContent(Token token)
+        private static string GetTokenContent(Token token)
         {
             var type = token.Type;
             
@@ -228,7 +227,18 @@ namespace HashScript
             };
         }
 
-        private bool HasValidName(Token token)
+        private static FieldType GetFieldType(Token token)
+        {
+            var type = token.Type;
+            
+            return type switch
+            {
+                TokenType.Complex => FieldType.Complex,
+                _ => FieldType.Simple
+            };
+        }
+
+        private static bool HasValidName(Token token)
         {
             return token.Content?.All(i => Char.IsLetterOrDigit(i)) ?? false;
         }
