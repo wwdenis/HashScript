@@ -10,7 +10,7 @@ namespace HashScript.Tests
         [Theory]
         [FileData("Parser", "Text", "SingleWord")]
         [FileData("Parser", "Text", "MultiLine")]
-        public void Can_Parse_Text(string template, Node expected)
+        public void Should_Parse_Text(string template, Node expected)
         {
             var subject = new Parser(template);
             var result = subject.Parse();
@@ -23,7 +23,7 @@ namespace HashScript.Tests
         [Theory]
         [FileData("Parser", "SimpleField", "OneField")]
         [FileData("Parser", "SimpleField", "TwoFields")]
-        public void Can_Parse_SimpleField(string template, Node expected)
+        public void Should_Parse_SimpleField(string template, Node expected)
         {
             var subject = new Parser(template);
             var result = subject.Parse();
@@ -46,7 +46,7 @@ namespace HashScript.Tests
         [FileData("Errors", "SimpleField", "WithSpace")]
         [FileData("Errors", "SimpleField", "WithTab")]
         [FileData("Errors", "SimpleField", "WithValueSign")]
-        public void Can_Parse_Errors(string template, Node expected)
+        public void Should_Fail_SimpleField(string template, Node expected)
         {
             var subject = new Parser(template);
             var result = subject.Parse();
@@ -64,7 +64,7 @@ namespace HashScript.Tests
         [FileData("Parser", "ComplexField", "NegateSingle")]
         [FileData("Parser", "ComplexField", "NegateAndLast")]
         [FileData("Parser", "ComplexField", "NegateAndFirst")]
-        public void Can_Parse_ComplexField(string template, Node expected)
+        public void Should_Parse_ComplexField(string template, Node expected)
         {
             var subject = new Parser(template);
             var result = subject.Parse();
