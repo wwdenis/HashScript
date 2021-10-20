@@ -29,7 +29,7 @@ namespace HashScript.Tests
         }
 
         [Theory]
-        [FileData("Lexer", "Multi", "MixedSentence")]
+        [FileData("Lexer", "Multi", "MultiWord")]
         [FileData("Lexer", "Multi", "Complex")]
         [FileData("Lexer", "Multi", "Hash")]
         [FileData("Lexer", "Multi", "Mixed")]

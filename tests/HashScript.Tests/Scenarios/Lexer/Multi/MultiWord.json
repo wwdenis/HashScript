@@ -14,7 +14,7 @@
   { "Type": "Text", "Length": 5, "Content": "Today" },
   { "Type": "Space", "Length": 2 },
   { "Type": "Text", "Length": 2, "Content": "is" },
-  { "Type": "Tab", "Length": 2 },
+  { "Type": "Tab", "Length": 1 },
   { "Type": "Hash", "Length": 1 },
   { "Type": "Value", "Length": 1 },
   { "Type": "Hash", "Length": 1 },
