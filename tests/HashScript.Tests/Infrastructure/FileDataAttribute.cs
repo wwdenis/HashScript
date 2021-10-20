@@ -41,7 +41,7 @@ namespace HashScript.Tests.Infrastructure
 
         private string ReadTemplate()
         {
-            return this.ReadFile("hs");
+            return this.ReadFile("txt");
         }
 
         private object ReadExpected(Type expectedType)

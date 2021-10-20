@@ -34,7 +34,7 @@ namespace HashScript.Harness
         {
             var result = new Dictionary<string, string>();
             var dir = new DirectoryInfo(TemplateFolder);
-            var files = dir.EnumerateFiles("*.hs");
+            var files = dir.EnumerateFiles("*.txt");
             
             foreach (var file in files)
             {

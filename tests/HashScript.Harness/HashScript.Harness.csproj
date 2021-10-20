@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Scenarios\*.hs" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Scenarios\**\*.*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
