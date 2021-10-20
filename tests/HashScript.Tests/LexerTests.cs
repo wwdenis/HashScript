@@ -8,7 +8,7 @@ namespace HashScript.Tests
     public class LexerTests
     {
         [Theory]
-        [FileData("TokenSimple")]
+        [FileData("LexerSingle")]
         public void Can_Read_Single(string content, TokenType expected)
         {
             var expectedTypes = new[]
@@ -24,7 +24,7 @@ namespace HashScript.Tests
         }
 
         [Theory]
-        [FileData("TokenMulti")]
+        [FileData("LexerMulti")]
         public void Can_Read_Multi(string content, Token[] expected)
         {
             var subject = new Lexer(content);
