@@ -7,6 +7,8 @@ namespace HashScript.Domain
         public FieldNode(string name, IEnumerable<Node> nodes) : base(nodes)
         {
             this.Name = name ?? string.Empty;
+            this.FieldType = FieldType.Simple;
+            this.FieldFunction = FieldFunction.None;
         }
 
         public FieldNode(string name) : this(name, null)
@@ -20,6 +22,8 @@ namespace HashScript.Domain
         public override NodeType NodeType => NodeType.Field;
 
         public FieldType FieldType { get; set; }
+
+        public FieldFunction FieldFunction { get; set; }
 
         public string Name { get; set; }
     }

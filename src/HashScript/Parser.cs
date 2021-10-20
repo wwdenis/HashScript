@@ -31,7 +31,7 @@ namespace HashScript
             return doc;
         }
 
-        public List<Node> ParseChildren(Queue<Token> tokens, List<string> errors, FieldNode parent = null)
+        private List<Node> ParseChildren(Queue<Token> tokens, List<string> errors, FieldNode parent = null)
         {
             var nodes = new List<Node>();
             var hasCloseNode = false;
@@ -79,6 +79,8 @@ namespace HashScript
             var hasStart = false;
             var hasEnd = false;
             var hasInvalid = false;
+            var hasFunction = false;
+            var isComposite = false;
             var fieldType = FieldType.Simple;
 
             while (tokens.Any())
@@ -107,7 +109,18 @@ namespace HashScript
                         }
                         else
                         {
+                            isComposite = true;
                             fieldType = GetFieldType(current);
+                        }
+                        break;
+                    case TokenType.Dot:
+                        if (!isComposite || !hasStart || buffer.Any())
+                        {
+                            hasInvalid = true;
+                        }
+                        else
+                        {
+                            hasFunction = true;
                         }
                         break;
                     case TokenType.Text:
@@ -132,8 +145,21 @@ namespace HashScript
             }
 
             var name = BuildContent(buffer);
+            var fieldFunction = FieldFunction.None;
+
+            if (hasFunction)
+            {
+                fieldFunction = BuildFunction(name);
+
+                if (fieldFunction == FieldFunction.None)
+                {
+                    error = $"Field contains an invalid function: {name}";
+                }
+            }
+
             var node = new FieldNode(name);
             node.FieldType = fieldType;
+            node.FieldFunction = fieldFunction;
 
             if (hasInvalid)
             {
@@ -203,6 +229,16 @@ namespace HashScript
                              let content = string.IsNullOrEmpty(i.Content) ? new string(tokenChar, i.Length) : i.Content
                              select content;
             return string.Join("", allContent);
+        }
+
+        private FieldFunction BuildFunction(string name)
+        {
+            return name?.ToUpperInvariant() switch
+            {
+                "FIRST" => FieldFunction.IsFirst,
+                "LAST" => FieldFunction.IsLast,
+                _ => FieldFunction.None
+            };
         }
 
         private static string GetTokenContent(Token token)
