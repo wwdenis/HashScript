@@ -1,0 +1,8 @@
+[
+  { "Type": "Hash", "Length": 1 },
+  { "Type": "Hash", "Length": 1 },
+  { "Type": "Text", "Length": 5, "Content": "first" },
+  { "Type": "Hash", "Length": 1 },
+  { "Type": "Hash", "Length": 1 },
+  { "Type": "EOF", "Length": 1 }
+]

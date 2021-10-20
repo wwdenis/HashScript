@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
@@ -10,168 +11,67 @@ namespace HashScript.Tests.Infrastructure
 {
     public class FileDataAttribute : DataAttribute
     {
-        private readonly IScenarioReader reader;
+        private const string RootFolder = "Scenarios";
 
-        internal FileDataAttribute(IScenarioReader reader)
-        {
-            this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
-        }
+        private readonly string[] pathFragments;
 
-        public FileDataAttribute(string fileName) : this(new FileScenarioReader(fileName))
+        public FileDataAttribute(params string[] pathFragments)
         {
+            this.pathFragments = pathFragments;
         }
 
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
             try
             {
-                var contents = this.reader.Read();
-                var result = ParseTestArguments(contents, testMethod);
-                return result;
+                var expectedArg = testMethod
+                    .GetParameters()
+                    .ElementAt(1);
+
+                var template = ReadTemplate();
+                var expected = ReadExpected(expectedArg.ParameterType);
+                return new object[][] { new object[] { template, expected } };
             }
-            catch
+            catch (Exception ex)
             {
-                return null;
+                var filePath = string.Join('|', pathFragments);
+                throw new Exception($"Unable to load scenario for: {filePath}", ex);
             }
         }
 
-        private static List<object[]> ParseTestArguments(string contents, MethodInfo testMethod)
+        private string ReadTemplate()
         {
-            var result = new List<object[]>();
-            
-            var args = testMethod
-                .GetParameters()
-                .ToDictionary(k => k.Name, v => v.ParameterType);
-
-            var scenarios = Deserialize<List<Dictionary<string, JsonElement>>>(contents);
-            var fileError = scenarios is null || scenarios.Any(i => i.Keys.Except(args.Keys).Any());
-
-            if (fileError)
-            {
-                return result;
-            }
-
-            foreach (var scenario in scenarios)
-            {
-                var values = new List<object>();
-                
-                foreach (var parameter in scenario)
-                {
-                    var error = false;
-                    var type = args[parameter.Key];
-                    var element = parameter.Value;
-
-                    var value = ReadElement(element, type, out error);
-
-                    if (error)
-                    {
-                        values = null;
-                        continue;
-                    }
-
-                    values.Add(value);
-                }
-
-                if (values is not null)
-                {
-                    result.Add(values.ToArray());
-                }
-            }
-
-            return result;
+            return this.ReadFile("hs");
         }
 
-        private static object ReadElement(JsonElement element, Type type, out bool error)
+        private object ReadExpected(Type expectedType)
         {
-            error = false;
-            object value = null;
-            
-            switch (element.ValueKind)
+            var json = this.ReadFile("json");
+
+            var options = new JsonSerializerOptions
             {
-                case JsonValueKind.String:
-                    value = element.GetString();
-                    break;
-                case JsonValueKind.Number:
-                    value = element.GetDouble();
-                    break;
-                case JsonValueKind.False:
-                    value = false;
-                    break;
-                case JsonValueKind.True:
-                    value = true;
-                    break;
-                case JsonValueKind.Object:
-                    var json = element.GetRawText();
-                    value = Deserialize(json, type, out error);
-                    break;
-                case JsonValueKind.Array:
-                    value = ReadArray(element, type, out error);
-                    break;
-            }
-
-            if (type.IsEnum && Enum.TryParse(type, (string)value, out var enumValue))
-            {
-                value = enumValue;
-            }
-
-            return value;
-        }
-
-        private static IEnumerable<object> ReadArray(JsonElement element, Type type, out bool error)
-        {
-            error = false;
-
-            if (!type.IsArray)
-            {
-                error = true;
-                return null;
-            }
-
-            var itemType = type.GetElementType();
-            var source = element.EnumerateArray();
-            var target = new List<object>();
-
-            foreach (var item in source)
-            {
-                var sourceItem = ReadElement(item, itemType, out error);
-                if (error)
-                {
-                    return null;
-                }
-                target.Add(sourceItem);
-            }
-
-            return target;
-        }
-
-        private static T Deserialize<T>(string contents)
-        {
-            return (T)Deserialize(contents, typeof(T), out _);
-        }
-
-        private static object Deserialize(string contents, Type type, out bool hasErrors)
-        {
-            var options = new JsonSerializerOptions()
-            {
-                WriteIndented = true,
-                ReferenceHandler = ReferenceHandler.Preserve,
+                Converters = { new JsonStringEnumConverter(), new NodeConverter() },
+                WriteIndented = true
             };
 
-            options.Converters.Add(new JsonStringEnumConverter());
+            return JsonSerializer.Deserialize(json, expectedType, options);
+        }
 
-            object value = null;
+        private string ReadFile(string fileExtension)
+        {
+            var fullPath = RootFolder;
 
-            try
+            foreach (var dir in this.pathFragments)
             {
-                hasErrors = false;
-                value = JsonSerializer.Deserialize(contents, type, options);
-            }
-            catch (Exception)
-            {
-                hasErrors = true;
+                fullPath = Path.Combine(fullPath, dir);
             }
 
-            return value;
+            if (!Path.HasExtension(fullPath))
+            {
+                fullPath = Path.ChangeExtension(fullPath, fileExtension);
+            }
+
+            return File.ReadAllText(fullPath);
         }
     }
 }
