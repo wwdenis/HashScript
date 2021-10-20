@@ -1,0 +1,19 @@
+{
+  "NodeType": "Document",
+  "Errors": [],
+  "Children": [
+    {
+      "NodeType": "Field",
+      "FieldType": "Negate",
+      "FieldFunction": "IsLast",
+      "Name": "Last",
+      "Children": [
+        {
+          "NodeType": "Text",
+          "Content": " Title ",
+          "Children": []
+        }
+      ]
+    }
+  ]
+}

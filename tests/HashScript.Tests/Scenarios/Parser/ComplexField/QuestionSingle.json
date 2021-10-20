@@ -1,0 +1,18 @@
+{
+  "NodeType": "Document",
+  "Errors": [],
+  "Children": [
+    {
+      "NodeType": "Field",
+      "FieldType": "Question",
+      "Name": "IsActive",
+      "Children": [
+        {
+          "NodeType": "Text",
+          "Content": "Title",
+          "Children": []
+        }
+      ]
+    }
+  ]
+}

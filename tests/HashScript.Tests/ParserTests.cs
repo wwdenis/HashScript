@@ -55,5 +55,23 @@ namespace HashScript.Tests
                 .Should()
                 .BeEquivalentTo(expected);
         }
+
+        [Theory]
+        [FileData("Parser", "ComplexField", "QuestionSingle")]
+        [FileData("Parser", "ComplexField", "ValueSingle")]
+        [FileData("Parser", "ComplexField", "ComplexSingle")]
+        [FileData("Parser", "ComplexField", "ComplexNested")]
+        [FileData("Parser", "ComplexField", "NegateSingle")]
+        [FileData("Parser", "ComplexField", "NegateAndLast")]
+        [FileData("Parser", "ComplexField", "NegateAndFirst")]
+        public void Can_Parse_ComplexField(string template, Node expected)
+        {
+            var subject = new Parser(template);
+            var result = subject.Parse();
+
+            result
+                .Should()
+                .BeEquivalentTo(expected);
+        }
     }
 }

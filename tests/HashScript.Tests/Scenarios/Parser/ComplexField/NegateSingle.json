@@ -1,0 +1,18 @@
+{
+  "NodeType": "Document",
+  "Errors": [],
+  "Children": [
+    {
+      "NodeType": "Field",
+      "FieldType": "Negate",
+      "Name": "HasItems",
+      "Children": [
+        {
+          "NodeType": "Text",
+          "Content": "Empty Search",
+          "Children": []
+        }
+      ]
+    }
+  ]
+}
