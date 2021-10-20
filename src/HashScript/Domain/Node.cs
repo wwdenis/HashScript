@@ -16,9 +16,7 @@ namespace HashScript.Domain
 
         public abstract NodeType NodeType { get; }
 
-        public Node Parent { get; set; }
-
-        public List<Node> Children { get; } = new List<Node>();
+        public List<Node> Children { get; set; } = new List<Node>();
 
         public override string ToString()
         {

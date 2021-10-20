@@ -27,7 +27,6 @@ namespace HashScript
             var errors = new List<string>();
             var children = ParseChildren(tokens, errors);
             var doc = new DocumentNode(children, errors);
-            children.ForEach(i => i.Parent = doc);
 
             return doc;
         }
@@ -195,7 +194,6 @@ namespace HashScript
             else if (fieldType != FieldType.Simple)
             {
                 var children = ParseChildren(tokens, errors, node);
-                children.ForEach(i => i.Parent = node);
                 node.Children.AddRange(children);
             }
 
