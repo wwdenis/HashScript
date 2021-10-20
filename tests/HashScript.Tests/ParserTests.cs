@@ -21,9 +21,9 @@ namespace HashScript.Tests
         }
 
         [Theory]
-        [FileData("Parser", "Field", "SimpleOne")]
-        [FileData("Parser", "Field", "SimpleMulti")]
-        public void Can_Parse_Field(string template, Node expected)
+        [FileData("Parser", "SimpleField", "OneField")]
+        [FileData("Parser", "SimpleField", "TwoFields")]
+        public void Can_Parse_SimpleField(string template, Node expected)
         {
             var subject = new Parser(template);
             var result = subject.Parse();
