@@ -3,11 +3,12 @@
     "template": "ABC",
     "expected": {
       "$id": "1",
-      "Type": "Document",
+      "NodeType": "Document",
+      "Errors": [],
       "Children": [
         {
           "Content": "ABC",
-          "Type": "Text",
+          "NodeType": "Text",
           "Parent": {
             "$ref": "1"
           }
@@ -19,11 +20,12 @@
     "template": "FIRST  SECOND\nTHIRD",
     "expected": {
       "$id": "1",
-      "Type": "Document",
+      "NodeType": "Document",
+      "Errors": [],
       "Children": [
         {
           "Content": "FIRST  SECOND\nTHIRD",
-          "Type": "Text",
+          "NodeType": "Text",
           "Parent": {
             "$ref": "1"
           }

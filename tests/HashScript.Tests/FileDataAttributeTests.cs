@@ -50,11 +50,11 @@ namespace HashScript.Tests
                     'expected': {
                         '$id': '1',
                         'Content': 'Parent',
-                        'Type': 'Document',
+                        'NodeType': 'Document',
                         'Children': [
-                            { 'Content': 'One', 'Type': 'Field', 'Parent': { '$ref': '1' } },
-                            { 'Content': 'Two', 'Type': 'Field', 'Parent': { '$ref': '1' } },
-                            { 'Content': 'Three', 'Type': 'Field', 'Parent': { '$ref': '1' } }
+                            { 'Content': 'One', 'NodeType': 'Field', 'Parent': { '$ref': '1' } },
+                            { 'Content': 'Two', 'NodeType': 'Field', 'Parent': { '$ref': '1' } },
+                            { 'Content': 'Three', 'NodeType': 'Field', 'Parent': { '$ref': '1' } }
                         ]
                     }
                 }]",

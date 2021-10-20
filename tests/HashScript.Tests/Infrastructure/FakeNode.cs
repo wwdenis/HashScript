@@ -16,7 +16,7 @@ namespace HashScript.Tests.Infrastructure
         public FakeNode(string content, NodeType type) : this()
         {
             this.Content = content;
-            this.Type = type;
+            this.NodeType = type;
         }
 
         public FakeNode(string content, NodeType type, FakeNode parent) : this(content, type)
@@ -34,9 +34,11 @@ namespace HashScript.Tests.Infrastructure
 
         public string Content { get; set; }
 
-        public NodeType Type { get; set; }
+        public NodeType NodeType { get; set; }
 
         public FakeNode Parent { get; set; }
+
+        public List<string> Errors { get; set; }
 
         public List<FakeNode> Children
         {
@@ -47,16 +49,13 @@ namespace HashScript.Tests.Infrastructure
             set
             {
                 children = value ?? new List<FakeNode>();
-                foreach (var item in children)
-                {
-                    item.Parent = this;
-                }
+                children.ForEach(i => i.Parent = this);
             }
         }
 
         public override string ToString()
         {
-            return $"{this.Type}";
+            return $"{this.NodeType}";
         }
     }
 }

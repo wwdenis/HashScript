@@ -3,11 +3,12 @@
     "template": "#Name#",
     "expected": {
       "$id": "1",
-      "Type": "Document",
+      "NodeType": "Document",
+      "Errors": [],
       "Children": [
         {
           "Name": "Name",
-          "Type": "Field",
+          "NodeType": "Field",
           "Parent": {
             "$ref": "1"
           }
@@ -18,29 +19,30 @@
     "template": "Hi \t\t\t #Name#!\n\n\nToday is: #Date#",
     "expected": {
       "$id": "1",
-      "Type": "Document",
+      "NodeType": "Document",
+      "Errors": [],
       "Children": [
         {
           "Content": "Hi \t\t\t ",
-          "Type": "Text",
+          "NodeType": "Text",
           "Parent": {
             "$ref": "1"
           }
         }, {
           "Name": "Name",
-          "Type": "Field",
+          "NodeType": "Field",
           "Parent": {
             "$ref": "1"
           }
         }, {
           "Content": "\n\n\nToday is: ",
-          "Type": "Text",
+          "NodeType": "Text",
           "Parent": {
             "$ref": "1"
           }
         }, {
           "Name": "Name",
-          "Type": "Date",
+          "NodeType": "Date",
           "Parent": {
             "$ref": "1"
           }
