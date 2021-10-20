@@ -80,8 +80,10 @@ namespace HashScript
             var hasEnd = false;
             var hasInvalid = false;
             var hasFunction = false;
-            var isComposite = false;
+            var hasComposite = false;
+
             var fieldType = FieldType.Simple;
+            var fieldFunction = FieldFunction.None;
 
             while (tokens.Any())
             {
@@ -109,18 +111,29 @@ namespace HashScript
                         }
                         else
                         {
-                            isComposite = true;
+                            hasComposite = true;
                             fieldType = GetFieldType(current);
                         }
                         break;
                     case TokenType.Dot:
-                        if (!isComposite || !hasStart || buffer.Any())
+                        if (!hasComposite || !hasStart || buffer.Any())
                         {
                             hasInvalid = true;
                         }
                         else
                         {
                             hasFunction = true;
+                        }
+                        break;
+                    case TokenType.Value:
+                        if (!hasStart || buffer.Any())
+                        {
+                            hasInvalid = true;
+                        }
+                        else
+                        {
+                            hasFunction = true;
+                            buffer.Enqueue(current);
                         }
                         break;
                     case TokenType.Text:
@@ -145,7 +158,6 @@ namespace HashScript
             }
 
             var name = BuildContent(buffer);
-            var fieldFunction = FieldFunction.None;
 
             if (hasFunction)
             {
@@ -235,6 +247,7 @@ namespace HashScript
         {
             return name?.ToUpperInvariant() switch
             {
+                "$" => FieldFunction.GetValue,
                 "FIRST" => FieldFunction.IsFirst,
                 "LAST" => FieldFunction.IsLast,
                 _ => FieldFunction.None

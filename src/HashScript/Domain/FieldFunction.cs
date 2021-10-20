@@ -7,5 +7,6 @@ namespace HashScript.Domain
         None,
         IsFirst,
         IsLast,
+        GetValue,
     }
 }
