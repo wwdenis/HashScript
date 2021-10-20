@@ -34,7 +34,7 @@ namespace HashScript.Tests
         }
 
         [Theory]
-        [FileData("Errors", "SimpleField", "NoClose")]
+        [FileData("Errors", "SimpleField", "NoCloseHash")]
         [FileData("Errors", "SimpleField", "NoName")]
         [FileData("Errors", "SimpleField", "NoNameAndClose")]
         [FileData("Errors", "SimpleField", "WithAmperstand")]
