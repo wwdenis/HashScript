@@ -37,17 +37,17 @@ namespace HashScript
             
             while (tokens.Any())
             {
-                FieldNode fieldNode = null;
                 TextNode textNode = null;
+                FieldNode fieldNode = null;
 
-                if ((fieldNode = ParseField(tokens, errors, parent)) is not null)
-                {
-                    nodes.Add(fieldNode);
-                }
-                else if ((textNode = ParseText(tokens)) is not null)
+                if ((textNode = ParseText(tokens)) is not null)
                 {
                     nodes.Add(textNode);
                 }
+                else if ((fieldNode = ParseField(tokens, errors, parent)) is not null)
+                {
+                    nodes.Add(fieldNode);
+                } 
                 else
                 {
                     break;
