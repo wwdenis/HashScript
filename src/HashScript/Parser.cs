@@ -38,20 +38,30 @@ namespace HashScript
             
             while (tokens.Any())
             {
-                Node node = ParseText(tokens);
-                if (node is null)
-                {
-                    node = ParseField(tokens, errors);
-                    hasCloseNode = IsCloseNode(parent, node as FieldNode);
-                }
+                var textNode = ParseText(tokens);
 
-                if (node is null || hasCloseNode)
+                if (textNode is not null)
                 {
-                    break;
+                    nodes.Add(textNode);
                 }
                 else
                 {
-                    nodes.Add(node);
+                    var fieldNode = ParseField(tokens, errors);
+                    hasCloseNode = IsCloseNode(parent, fieldNode);
+
+                    if (fieldNode is null || hasCloseNode)
+                    {
+                        break;
+                    }
+                    else if (string.IsNullOrEmpty(fieldNode.Name))
+                    {
+                        var error = "Field must contain a valid name";
+                        errors.Add(error);
+                    }
+                    else
+                    {
+                        nodes.Add(fieldNode);
+                    }
                 }
             }
 
