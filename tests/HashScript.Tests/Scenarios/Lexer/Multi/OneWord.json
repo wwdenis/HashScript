@@ -1,0 +1,4 @@
+[
+  { "Type": "Text", "Length": 3, "Content": "abc" },
+  { "Type": "EOF", "Length": 1 }
+]

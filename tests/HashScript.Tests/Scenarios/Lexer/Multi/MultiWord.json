@@ -1,0 +1,22 @@
+[
+  { "Type": "Text", "Length": 4, "Content": "Good" },
+  { "Type": "Space", "Length": 1 },
+  { "Type": "Text", "Length": 7, "Content": "Morning" },
+  { "Type": "Space", "Length": 1 },
+  { "Type": "Text", "Length": 2, "Content": "Mr" },
+  { "Type": "Dot", "Length": 1 },
+  { "Type": "Space", "Length": 1 },
+  { "Type": "Hash", "Length": 1 },
+  { "Type": "Text", "Length": 8, "Content": "UserName" },
+  { "Type": "Hash", "Length": 1 },
+  { "Type": "Dot", "Length": 1 },
+  { "Type": "NewLine", "Length": 3 },
+  { "Type": "Text", "Length": 5, "Content": "Today" },
+  { "Type": "Space", "Length": 2 },
+  { "Type": "Text", "Length": 2, "Content": "is" },
+  { "Type": "Tab", "Length": 1 },
+  { "Type": "Hash", "Length": 1 },
+  { "Type": "Value", "Length": 1 },
+  { "Type": "Hash", "Length": 1 },
+  { "Type": "EOF", "Length": 1 }
+]

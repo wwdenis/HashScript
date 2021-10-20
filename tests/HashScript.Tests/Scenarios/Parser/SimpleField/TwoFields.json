@@ -1,0 +1,19 @@
+{
+  "NodeType": "Document",
+  "Errors": [],
+  "Children": [
+    {
+      "Content": "Hi \t\t\t ",
+      "NodeType": "Text"
+    }, {
+      "Name": "Name",
+      "NodeType": "Field"
+    }, {
+      "Content": "\n\n\nToday is: ",
+      "NodeType": "Text"
+    }, {
+      "Name": "Date",
+      "NodeType": "Field"
+    }
+  ]
+}

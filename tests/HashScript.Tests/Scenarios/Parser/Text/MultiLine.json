@@ -1,0 +1,10 @@
+{
+  "NodeType": "Document",
+  "Errors": [],
+  "Children": [
+    {
+      "Content": "FIRST  SECOND\nTHIRD",
+      "NodeType": "Text"
+    }
+  ]
+}

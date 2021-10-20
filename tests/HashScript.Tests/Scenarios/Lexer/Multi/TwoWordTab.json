@@ -1,0 +1,6 @@
+[
+  { "Type": "Text", "Length": 5, "Content": "first" },
+  { "Type": "Tab", "Length": 1 },
+  { "Type": "Text", "Length": 6, "Content": "second" },
+  { "Type": "EOF", "Length": 1 }
+]

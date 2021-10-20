@@ -1,0 +1,9 @@
+[
+  { "Type": "Negate", "Length": 1 },
+  { "Type": "Negate", "Length": 1 },
+  { "Type": "Value", "Length": 1 },
+  { "Type": "Value", "Length": 1 },
+  { "Type": "Question", "Length": 1 },
+  { "Type": "Question", "Length": 1 },
+  { "Type": "EOF", "Length": 1 }
+]

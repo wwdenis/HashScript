@@ -1,0 +1,111 @@
+[
+  {
+    "template": "#",
+    "expected": {
+      "$id": "1",
+      "NodeType": "Document",
+      "Errors": [
+        "Field does not contains a close Hash"
+      ]
+    }
+  }, {
+    "template": "##",
+    "expected": {
+      "$id": "1",
+      "NodeType": "Document",
+      "Errors": [
+        "Field must contain a valid name"
+      ]
+    }
+  }, {
+    "template": "#Test",
+    "expected": {
+      "$id": "1",
+      "NodeType": "Document",
+      "Errors": [
+        "Field does not contains a close Hash"
+      ]
+    }
+  }, {
+    "template": "# #",
+    "expected": {
+      "$id": "1",
+      "NodeType": "Document",
+      "Errors": [
+        "Field contains an invalid character: Space"
+      ]
+    }
+  }, {
+    "template": "#\t#",
+    "expected": {
+      "$id": "1",
+      "NodeType": "Document",
+      "Errors": [
+        "Field contains an invalid character: Tab"
+      ]
+    }
+  }, {
+    "template": "#\n#",
+    "expected": {
+      "$id": "1",
+      "NodeType": "Document",
+      "Errors": [
+        "Field contains an invalid character: NewLine"
+      ]
+    }
+  }, {
+    "template": "#Name+#",
+    "expected": {
+      "$id": "1",
+      "NodeType": "Document",
+      "Errors": [
+        "Field contains an invalid character: +"
+      ]
+    }
+  }, {
+    "template": "#Name.#",
+    "expected": {
+      "$id": "1",
+      "NodeType": "Document",
+      "Errors": [
+        "Field contains an invalid character: ."
+      ]
+    }
+  }, {
+    "template": "#Name?#",
+    "expected": {
+      "$id": "1",
+      "NodeType": "Document",
+      "Errors": [
+        "Field contains an invalid character: ?"
+      ]
+    }
+  }, {
+    "template": "#Name!#",
+    "expected": {
+      "$id": "1",
+      "NodeType": "Document",
+      "Errors": [
+        "Field contains an invalid character: !"
+      ]
+    }
+    }, {
+      "template": "#Name$#",
+      "expected": {
+        "$id": "1",
+        "NodeType": "Document",
+        "Errors": [
+          "Field contains an invalid character: $"
+        ]
+      }
+  }, {
+    "template": "#Name&#",
+    "expected": {
+      "$id": "1",
+      "NodeType": "Document",
+      "Errors": [
+        "Field contains an invalid character: Name&"
+      ]
+    }
+  }
+]

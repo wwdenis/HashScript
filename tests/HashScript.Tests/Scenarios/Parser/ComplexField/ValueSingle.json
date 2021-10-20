@@ -1,0 +1,12 @@
+{
+  "NodeType": "Document",
+  "Errors": [],
+  "Children": [
+    {
+      "NodeType": "Field",
+      "FieldFunction": "GetValue",
+      "Name": "$",
+      "Children": []
+    }
+  ]
+}

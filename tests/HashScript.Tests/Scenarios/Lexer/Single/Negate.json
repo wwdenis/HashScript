@@ -1,0 +1,4 @@
+[
+  { "Type": "Negate", "Length": 1 },
+  { "Type": "EOF", "Length": 1 }
+]
