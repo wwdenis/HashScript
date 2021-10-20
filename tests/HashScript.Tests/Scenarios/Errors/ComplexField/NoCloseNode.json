@@ -1,0 +1,14 @@
+{
+  "NodeType": "Document",
+  "Errors": [
+    "Field 'Test' does not contains a close Node"
+  ],
+  "Children": [
+    {
+      "NodeType": "Field",
+      "FieldType": "Complex",
+      "Name": "Test",
+      "Children": []
+    }
+  ]
+}

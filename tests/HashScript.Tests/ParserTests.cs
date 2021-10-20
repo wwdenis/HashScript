@@ -73,5 +73,21 @@ namespace HashScript.Tests
                 .Should()
                 .BeEquivalentTo(expected);
         }
+
+        [Theory]
+        [FileData("Errors", "ComplexField", "InvalidFunction")]
+        [FileData("Errors", "ComplexField", "NoCloseHash")]
+        [FileData("Errors", "ComplexField", "NoCloseNode")]
+        [FileData("Errors", "ComplexField", "NoName")]
+        [FileData("Errors", "ComplexField", "NoNameAndClose")]
+        public void Should_Fail_ComplexField(string template, Node expected)
+        {
+            var subject = new Parser(template);
+            var result = subject.Parse();
+
+            result
+                .Should()
+                .BeEquivalentTo(expected);
+        }
     }
 }
