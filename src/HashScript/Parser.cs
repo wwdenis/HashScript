@@ -93,6 +93,8 @@ namespace HashScript
                         }
                         break;
                     case TokenType.Complex:
+                    case TokenType.IsTrue:
+                    case TokenType.IsFalse:
                         if (!hasStart || buffer.Any())
                         {
                             hasInvalid = true;
@@ -224,6 +226,8 @@ namespace HashScript
             return type switch
             {
                 TokenType.Complex => FieldType.Complex,
+                TokenType.IsTrue => FieldType.IsTrue,
+                TokenType.IsFalse => FieldType.IsFalse,
                 _ => FieldType.Simple
             };
         }
