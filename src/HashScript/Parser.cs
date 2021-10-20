@@ -25,39 +25,46 @@ namespace HashScript
             var tokens = new Queue<Token>(content);
 
             var errors = new List<string>();
-            var children = ParseChildren(tokens, errors, parent: null);
+            var children = ParseChildren(tokens, errors);
             var doc = new DocumentNode(children, errors);
 
             return doc;
         }
 
-        public List<Node> ParseChildren(Queue<Token> tokens, List<string> errors, FieldNode parent)
+        public List<Node> ParseChildren(Queue<Token> tokens, List<string> errors, FieldNode parent = null)
         {
             var nodes = new List<Node>();
+            var hasCloseNode = false;
             
             while (tokens.Any())
             {
-                TextNode textNode = null;
-                FieldNode fieldNode = null;
-
-                if ((textNode = ParseText(tokens)) is not null)
+                Node node = ParseText(tokens);
+                if (node is null)
                 {
-                    nodes.Add(textNode);
+                    node = ParseField(tokens, errors);
+                    hasCloseNode = IsCloseNode(parent, node as FieldNode);
                 }
-                else if ((fieldNode = ParseField(tokens, errors, parent)) is not null)
-                {
-                    nodes.Add(fieldNode);
-                } 
-                else
+
+                if (node is null || hasCloseNode)
                 {
                     break;
                 }
+                else
+                {
+                    nodes.Add(node);
+                }
+            }
+
+            if (!hasCloseNode && parent is not null)
+            {
+                var error = $"Field '{parent.Name}' does not contains a close Node";
+                errors.Add(error);
             }
 
             return nodes;
         }
 
-        private FieldNode ParseField(Queue<Token> tokens, List<string> errors, FieldNode parent)
+        private FieldNode ParseField(Queue<Token> tokens, List<string> errors)
         {
             if (!tokens.Any() || tokens.Peek().Type != TokenType.Hash)
             {
@@ -72,7 +79,6 @@ namespace HashScript
             var hasStart = false;
             var hasEnd = false;
             var hasInvalid = false;
-            var hasChildren = false;
             var fieldType = FieldType.Simple;
 
             while (tokens.Any())
@@ -101,7 +107,6 @@ namespace HashScript
                         }
                         else
                         {
-                            hasChildren = true;
                             fieldType = GetFieldType(current);
                         }
                         break;
@@ -134,22 +139,18 @@ namespace HashScript
             {
                 error = $"Field contains an invalid character: {GetTokenContent(current)}";
             }
-            else if (string.IsNullOrEmpty(name))
-            {
-                if (parent?.FieldType == fieldType)
-                {
-                    return null;
-                }
-                else
-                {
-                    error = "Field must contain a valid name";
-                }
-            }
             else if (!hasEnd)
             {
                 error = "Field does not contains a close Hash";
             }
-            else if (hasChildren)
+            else if (string.IsNullOrEmpty(name))
+            {
+                if (fieldType == FieldType.Simple)
+                {
+                    error = "Field must contain a valid name";
+                }
+            }
+            else if (fieldType != FieldType.Simple)
             {
                 var children = ParseChildren(tokens, errors, node);
                 node.Children.AddRange(children);
@@ -230,6 +231,15 @@ namespace HashScript
                 TokenType.IsFalse => FieldType.IsFalse,
                 _ => FieldType.Simple
             };
+        }
+
+        private static bool IsCloseNode(FieldNode parent, FieldNode child)
+        {
+            return
+                child is not null &&
+                parent is not null && 
+                child.FieldType == parent.FieldType &&
+                string.IsNullOrEmpty(child.Name);
         }
 
         private static bool HasValidName(Token token)
