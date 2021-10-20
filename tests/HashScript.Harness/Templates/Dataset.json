@@ -1,0 +1,10 @@
+{
+    "RootNamespace": "Utils",
+    "Namespace": "Test",
+    "Dataset": "UserDS",
+    "Model": "User",
+    "Properties": [
+        { "Name": "Id", "Type": "int" },
+        { "Name": "Name", "Type": "string" }
+    ]
+}
