@@ -71,8 +71,8 @@ namespace HashScript
                     case TokenType.Hash:
                     case TokenType.Complex:
                     case TokenType.Dot:
-                    case TokenType.IsTrue:
-                    case TokenType.IsFalse:
+                    case TokenType.Question:
+                    case TokenType.Negate:
                     case TokenType.Value:
                         length = 1;
                         createToken = true;

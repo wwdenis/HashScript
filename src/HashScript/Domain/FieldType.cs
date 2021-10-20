@@ -6,7 +6,7 @@ namespace HashScript.Domain
     {
         Simple,
         Complex,
-        IsTrue,
-        IsFalse
+        Question,
+        Negate
     }
 }
