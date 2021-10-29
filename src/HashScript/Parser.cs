@@ -135,17 +135,6 @@ namespace HashScript
                             hasFunction = true;
                         }
                         break;
-                    case TokenType.Value:
-                        if (!hasStart || buffer.Any())
-                        {
-                            hasInvalid = true;
-                        }
-                        else
-                        {
-                            hasFunction = true;
-                            buffer.Enqueue(current);
-                        }
-                        break;
                     case TokenType.Text:
                         if (HasValidName(current))
                         {
@@ -260,7 +249,6 @@ namespace HashScript
         {
             return name?.ToUpperInvariant() switch
             {
-                "$" => FieldFunction.GetValue,
                 "FIRST" => FieldFunction.IsFirst,
                 "LAST" => FieldFunction.IsLast,
                 _ => FieldFunction.None

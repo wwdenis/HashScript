@@ -17,7 +17,6 @@ namespace HashScript.Tests
         [FileData("Lexer", "Single", "NewLineReturn")]
         [FileData("Lexer", "Single", "Space")]
         [FileData("Lexer", "Single", "Tab")]
-        [FileData("Lexer", "Single", "Value")]
         public void Should_Read_Single(string template, Token[] expected)
         {
             var subject = new Lexer(template);

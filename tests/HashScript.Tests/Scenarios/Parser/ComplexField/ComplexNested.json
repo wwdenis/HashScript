@@ -44,17 +44,6 @@
                 },
                 {
                   "NodeType": "Field",
-                  "FieldFunction": "GetValue",
-                  "Name": "$",
-                  "Children": []
-                },
-                {
-                  "NodeType": "Text",
-                  "Content": "\n\t\t\t",
-                  "Children": []
-                },
-                {
-                  "NodeType": "Field",
                   "FieldType": "Question",
                   "FieldFunction": "IsLast",
                   "Name": "Last",

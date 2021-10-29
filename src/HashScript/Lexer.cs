@@ -73,7 +73,6 @@ namespace HashScript
                     case TokenType.Dot:
                     case TokenType.Question:
                     case TokenType.Negate:
-                    case TokenType.Value:
                         length = 1;
                         createToken = true;
                         break;

@@ -14,6 +14,5 @@ namespace HashScript.Domain
         Dot = '.',
         Question = '?',
         Negate = '!',
-        Value = '$',
     }
 }
