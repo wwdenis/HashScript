@@ -33,40 +33,65 @@ namespace HashScript
             return GenerateChildren(doc, data);
         }
 
-        private string GenerateChildren(Node parent, Dictionary<string, object> data)
+        private string GenerateChildren(Node node, Dictionary<string, object> data)
         {
             var builder = new StringBuilder();
 
-            foreach (var node in parent.Children)
+            foreach (var child in node.Children)
             {
-                if (node is TextNode textNode)
+                if (child is TextNode text)
                 {
-                    builder.Append(textNode.Content);
+                    builder.Append(text.Content);
                 }
-                else if (node is FieldNode fieldNode)
+                else if (child is FieldNode field)
                 {
-                    var content = string.Empty;
-                    var value = data.ContainsKey(fieldNode.Name) ? data[fieldNode.Name] : null;
+                    var value = GetRawValue(data, field);
+                    var treeData = GetTreeData(value);
 
-                    if (fieldNode.FieldType == FieldType.Simple)
+                    if (value is null)
                     {
-                        var simpleContent = value?.ToString() ?? "##NOT FOUND##";
-                        builder.Append(simpleContent);
+                        builder.Append($" ||{field.Name}|| ");
                     }
-                    else
+                    else if (field.FieldType == FieldType.Simple)
                     {
-                        var list = value as Dictionary<string, object>[];
-                        foreach (var item in list)
-                        {
-                            var complexContent = GenerateChildren(node, item);
-                            builder.Append(complexContent);
-                        }
+                        builder.Append(value);
                     }
 
+                    foreach (var leafData in treeData)
+                    {
+                        var content = GenerateChildren(child, leafData);
+                        builder.Append(content);
+                    }
                 }
             }
 
             return builder.ToString();
+        }
+
+        private object GetRawValue(Dictionary<string, object> data, FieldNode fieldNode)
+        {
+            if (data.TryGetValue(fieldNode.Name, out var value))
+            {
+                return value;
+            }
+
+            return null;
+        }
+
+        private static List<Dictionary<string, object>> GetTreeData(object value)
+        {
+            var result = new List<Dictionary<string, object>>();
+
+            if (value is Dictionary<string, object>[] collection)
+            {
+                result.AddRange(collection);
+            }
+            else if (value is Dictionary<string, object> single)
+            {
+                result.Add(single);
+            }
+
+            return result;
         }
     }
 }
