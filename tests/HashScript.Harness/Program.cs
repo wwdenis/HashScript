@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using HashScript.Harness.Scenarios;
 
 namespace HashScript.Harness
@@ -11,9 +13,18 @@ namespace HashScript.Harness
         {
             Console.WriteLine(DateTime.Now);
 
-            var templates = WriterScenario.GenerateAll();
+            var results = new Dictionary<string, string>();
+
+            if (args.Contains("-parse"))
+            {
+                results = TestHarness.ParseAll();
+            }
+            else
+            {
+                results = TestHarness.WriteAll();
+            }
             
-            foreach (var (name, output) in templates)
+            foreach (var (name, output) in results)
             {
                 Console.WriteLine($"File: {name}");
                 Console.WriteLine(output);

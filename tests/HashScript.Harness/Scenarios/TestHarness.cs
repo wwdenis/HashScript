@@ -1,18 +1,20 @@
 ﻿using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using HashScript.Domain;
+using Newtonsoft.Json.Converters;
 
 namespace HashScript.Harness.Scenarios
 {
-    internal static class WriterScenario
+    internal static class TestHarness
     {
         private const string TemplateFolder = "Templates";
         private const string ContentFolder = "Contents";
 
-        public static Dictionary<string, string> GenerateAll()
+        public static Dictionary<string, string> WriteAll()
         {
             var result = new Dictionary<string, string>();
-            var scenarios = ReadScenarios();
+            var scenarios = ReadWriteScenarios();
             
             foreach (var (name, template, input) in scenarios)
             {
@@ -25,7 +27,24 @@ namespace HashScript.Harness.Scenarios
             return result;
         }
 
-        static (string, string, Dictionary<string, object>)[] ReadScenarios()
+        public static Dictionary<string, string> ParseAll()
+        {
+            var result = new Dictionary<string, string>();
+            var templates = ReadFiles(TemplateFolder, "hs");
+            
+            foreach (var (name, contents) in templates)
+            {
+                var parser = new Parser(contents);
+                var doc = parser.Parse();
+                var output = Serialize(doc);
+
+                result.Add(name, output);
+            }
+
+            return result;
+        }
+
+        static (string, string, Dictionary<string, object>)[] ReadWriteScenarios()
         {
             var result = new List<(string, string, Dictionary<string, object>)>();
 
@@ -36,7 +55,7 @@ namespace HashScript.Harness.Scenarios
             
             foreach (var content in contents)
             {
-                var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(content.Value, new NestedObjectConverter());
+                var data = Deserialize(content.Value);
                 foreach (var template in templates)
                 {
                     result.Add((content.Key, template.Value, data));
@@ -59,6 +78,26 @@ namespace HashScript.Harness.Scenarios
             }
 
             return result;
+        }
+
+        static Dictionary<string, object> Deserialize(string contents)
+        {
+            return JsonConvert.DeserializeObject<Dictionary<string, object>>(contents, new NestedObjectConverter());
+        }
+
+        static string Serialize(Node node)
+        {
+            var settings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                DefaultValueHandling = DefaultValueHandling.Ignore,
+                Converters = new[]
+                {
+                    new StringEnumConverter()
+                },
+            };
+
+            return JsonConvert.SerializeObject(node, settings);
         }
     }
 }
