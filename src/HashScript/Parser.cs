@@ -249,8 +249,8 @@ namespace HashScript
         {
             return name?.ToUpperInvariant() switch
             {
-                "FIRST" => FieldFunction.IsFirst,
-                "LAST" => FieldFunction.IsLast,
+                "FIRST" => FieldFunction.First,
+                "LAST" => FieldFunction.Last,
                 _ => FieldFunction.None
             };
         }

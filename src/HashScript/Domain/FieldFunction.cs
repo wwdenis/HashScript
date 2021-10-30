@@ -5,8 +5,7 @@ namespace HashScript.Domain
     public enum FieldFunction
     {
         None,
-        IsFirst,
-        IsLast,
-        GetValue,
+        First,
+        Last,
     }
 }
