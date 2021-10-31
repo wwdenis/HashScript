@@ -14,7 +14,7 @@ namespace HashScript.Harness.Scenarios
         public static Dictionary<string, string> WriteAll()
         {
             var result = new Dictionary<string, string>();
-            var scenarios = ReadWriteScenarios();
+            var scenarios = CreateWriteScenarios();
             
             foreach (var (name, template, input) in scenarios)
             {
@@ -44,7 +44,7 @@ namespace HashScript.Harness.Scenarios
             return result;
         }
 
-        static (string, string, Dictionary<string, object>)[] ReadWriteScenarios()
+        static (string, string, Dictionary<string, object>)[] CreateWriteScenarios()
         {
             var result = new List<(string, string, Dictionary<string, object>)>();
 
@@ -58,7 +58,7 @@ namespace HashScript.Harness.Scenarios
                 var data = Deserialize(content.Value);
                 foreach (var template in templates)
                 {
-                    result.Add((content.Key, template.Value, data));
+                    result.Add(($"{content.Key}/{template.Key}", template.Value, data));
                 }
             }
 
