@@ -31,50 +31,64 @@ namespace HashScript
                 throw new ApplicationException("There are errors in the template syntax");
             }
 
-            return Generate(doc, data);
+            return RenderChildren(doc, data);
         }
 
-        private static string Generate(Node parentNode, Dictionary<string, object> parentData)
+        private static string RenderChildren(Node parent, Dictionary<string, object> data)
         {
             var builder = new StringBuilder();
 
-            foreach (var childNode in parentNode.Children)
+            foreach (var child in parent.Children)
             {
-                if (childNode is TextNode text)
+                if (child is TextNode text)
                 {
                     builder.Append(text.Content);
                 }
-                else if (childNode is FieldNode field)
+                else if (child is FieldNode field)
                 {
-                    var rawValue = GetRawValue(parentData, field);
-                    var contition = GetCondition(rawValue);
+                    var content = RenderField(field, data);
+                    builder.Append(content);
+                }
+            }
 
-                    var renderChild = true;
-                    var childData = GetTreeData(rawValue);
+            return builder.ToString();
+        }
 
-                    if (field.FieldType == FieldType.Simple)
-                    {
-                        builder.Append(rawValue ?? $"#{field.Name}#");
-                    }
-                    else if (field.FieldType == FieldType.Question) 
-                    {
-                        renderChild = contition;
-                        childData = new[]{ parentData };
-                    }
-                    else if (field.FieldType == FieldType.Negate)
-                    {
-                        renderChild = !contition;
-                        childData = new[]{ parentData };
-                    }
+        private static string RenderField(FieldNode field, Dictionary<string, object> data)
+        {
+            var builder = new StringBuilder();
 
-                    if (renderChild)
-                    {
-                        foreach (var dataItem in childData)
-                        {
-                            var content = Generate(childNode, dataItem);
-                            builder.Append(content);
-                        }
-                    }
+            var rawValue = GetRawValue(data, field);
+            var contition = GetCondition(rawValue);
+
+            var renderChild = false;
+            var renderData = Enumerable.Empty<Dictionary<string, object>>();
+
+            switch (field.FieldType)
+            {
+                case FieldType.Simple:
+                    builder.Append(rawValue ?? $"#{field.Name}#");
+                    break;
+                case FieldType.Question:
+                    renderChild = contition;
+                    renderData = new[]{ data };
+                    break;
+                case FieldType.Negate:
+                    renderChild = !contition;
+                    renderData = new[]{ data };
+                    break;
+                case FieldType.Complex:
+                    renderChild = true;
+                    renderData = GetTreeData(rawValue);;
+                    break;
+            }
+
+            if (renderChild)
+            {
+                foreach (var dataItem in renderData)
+                {
+                    var content = RenderChildren(field, dataItem);
+                    builder.Append(content);
                 }
             }
 
