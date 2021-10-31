@@ -1,7 +1,7 @@
 {
   "Items": [
-    { "Number": 1 },
-    { "Number": 2 },
-    { "Number": 3 }
+    { "Number": 1, "Last": false },
+    { "Number": 2, "Last": false },
+    { "Number": 3, "Last": true }
   ]
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,10 +31,10 @@ namespace HashScript
                 throw new ApplicationException("There are errors in the template syntax");
             }
 
-            return GenerateChildren(doc, data);
+            return Generate(doc, data);
         }
 
-        private string GenerateChildren(Node node, Dictionary<string, object> data)
+        private static string Generate(Node node, Dictionary<string, object> data)
         {
             var builder = new StringBuilder();
 
@@ -45,22 +46,36 @@ namespace HashScript
                 }
                 else if (child is FieldNode field)
                 {
-                    var value = GetRawValue(data, field);
-                    var treeData = GetTreeData(value);
+                    var rawValue = GetRawValue(data, field);
+                    var treeData = GetTreeData(rawValue);
+                    var contition = GetCondition(rawValue);
 
-                    if (value is null)
+                    var render = true;
+
+                    if (rawValue is null)
                     {
                         builder.Append($" ||{field.Name}|| ");
                     }
                     else if (field.FieldType == FieldType.Simple)
                     {
-                        builder.Append(value);
+                        builder.Append(rawValue);
+                    }
+                    else if (field.FieldType == FieldType.Question) 
+                    {
+                        render = contition;
+                    }
+                    else if (field.FieldType == FieldType.Negate)
+                    {
+                        render = !contition;
                     }
 
-                    foreach (var leafData in treeData)
+                    if (render)
                     {
-                        var content = GenerateChildren(child, leafData);
-                        builder.Append(content);
+                        foreach (var leafData in treeData)
+                        {
+                            var content = Generate(child, leafData);
+                            builder.Append(content);
+                        }
                     }
                 }
             }
@@ -68,7 +83,7 @@ namespace HashScript
             return builder.ToString();
         }
 
-        private object GetRawValue(Dictionary<string, object> data, FieldNode fieldNode)
+        private static object GetRawValue(Dictionary<string, object> data, FieldNode fieldNode)
         {
             if (data.TryGetValue(fieldNode.Name, out var value))
             {
@@ -78,7 +93,7 @@ namespace HashScript
             return null;
         }
 
-        private static List<Dictionary<string, object>> GetTreeData(object value)
+        private static Dictionary<string, object>[] GetTreeData(object value)
         {
             var result = new List<Dictionary<string, object>>();
 
@@ -90,8 +105,38 @@ namespace HashScript
             {
                 result.Add(single);
             }
+            else if (value is not null)
+            {
+                var empty = new Dictionary<string, object>
+                {
+                    { "", value },
+                };
+                result.Add(empty);
+            }
 
-            return result;
+            return result.ToArray();
+        }
+
+        private static bool GetCondition(object value)
+        {
+            if (value is bool contition)
+            {
+                return contition;
+            }
+            else if (value is double number)
+            {
+                return number > 0;
+            }
+            else if (value is string text)
+            {
+                return !string.IsNullOrEmpty(text);
+            }
+            else if (value is IEnumerable collection)
+            {
+                return collection.OfType<object>().Any();
+            }
+
+            return false;
         }
     }
 }
