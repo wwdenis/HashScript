@@ -52,13 +52,9 @@ namespace HashScript
 
                     var render = true;
 
-                    if (rawValue is null)
+                    if (field.FieldType == FieldType.Simple)
                     {
-                        builder.Append($" ||{field.Name}|| ");
-                    }
-                    else if (field.FieldType == FieldType.Simple)
-                    {
-                        builder.Append(rawValue);
+                        builder.Append(rawValue ?? $"#{field.Name}#");
                     }
                     else if (field.FieldType == FieldType.Question) 
                     {
@@ -93,7 +89,7 @@ namespace HashScript
             return null;
         }
 
-        private static Dictionary<string, object>[] GetTreeData(object value)
+        private static IEnumerable<Dictionary<string, object>> GetTreeData(object value)
         {
             var result = new List<Dictionary<string, object>>();
 
@@ -114,7 +110,16 @@ namespace HashScript
                 result.Add(empty);
             }
 
-            return result.ToArray();
+            var pos = 0;
+
+            foreach (var item in result)
+            {
+                pos++;
+                item.TryAdd(".First", pos == 1);
+                item.TryAdd(".Last", pos == result.Count);
+            }
+
+            return result;
         }
 
         private static bool GetCondition(object value)
@@ -123,9 +128,13 @@ namespace HashScript
             {
                 return contition;
             }
-            else if (value is double number)
+            else if (value is double decNumber)
             {
-                return number > 0;
+                return decNumber > 0;
+            }
+            else if (value is long intNumber)
+            {
+                return intNumber > 0;
             }
             else if (value is string text)
             {
