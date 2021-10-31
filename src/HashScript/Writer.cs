@@ -59,10 +59,12 @@ namespace HashScript
                     else if (field.FieldType == FieldType.Question) 
                     {
                         render = contition;
+                        treeData = new[]{ data };
                     }
                     else if (field.FieldType == FieldType.Negate)
                     {
                         render = !contition;
+                        treeData = new[]{ data };
                     }
 
                     if (render)
