@@ -34,23 +34,23 @@ namespace HashScript
             return Generate(doc, data);
         }
 
-        private static string Generate(Node node, Dictionary<string, object> data)
+        private static string Generate(Node parentNode, Dictionary<string, object> parentData)
         {
             var builder = new StringBuilder();
 
-            foreach (var child in node.Children)
+            foreach (var childNode in parentNode.Children)
             {
-                if (child is TextNode text)
+                if (childNode is TextNode text)
                 {
                     builder.Append(text.Content);
                 }
-                else if (child is FieldNode field)
+                else if (childNode is FieldNode field)
                 {
-                    var rawValue = GetRawValue(data, field);
-                    var treeData = GetTreeData(rawValue);
+                    var rawValue = GetRawValue(parentData, field);
                     var contition = GetCondition(rawValue);
 
-                    var render = true;
+                    var renderChild = true;
+                    var childData = GetTreeData(rawValue);
 
                     if (field.FieldType == FieldType.Simple)
                     {
@@ -58,20 +58,20 @@ namespace HashScript
                     }
                     else if (field.FieldType == FieldType.Question) 
                     {
-                        render = contition;
-                        treeData = new[]{ data };
+                        renderChild = contition;
+                        childData = new[]{ parentData };
                     }
                     else if (field.FieldType == FieldType.Negate)
                     {
-                        render = !contition;
-                        treeData = new[]{ data };
+                        renderChild = !contition;
+                        childData = new[]{ parentData };
                     }
 
-                    if (render)
+                    if (renderChild)
                     {
-                        foreach (var leafData in treeData)
+                        foreach (var dataItem in childData)
                         {
-                            var content = Generate(child, leafData);
+                            var content = Generate(childNode, dataItem);
                             builder.Append(content);
                         }
                     }
