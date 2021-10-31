@@ -131,6 +131,7 @@ namespace HashScript
                         }
                         else
                         {
+                            nameBuffer.Enqueue(currentToken);
                             hasFunction = true;
                         }
                         break;
@@ -267,7 +268,9 @@ namespace HashScript
 
         private static bool TryParseFunction(string name, out FunctionType type)
         {
-            if (!Enum.TryParse(name, true, out type))
+            var isFunction = name.StartsWith((char)TokenType.Dot);
+            
+            if (!isFunction || !Enum.TryParse(name.Remove(0, 1), true, out type))
             {
                 type = FunctionType.None;
             }

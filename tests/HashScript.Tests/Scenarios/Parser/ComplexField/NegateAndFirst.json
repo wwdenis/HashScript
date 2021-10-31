@@ -6,7 +6,7 @@
       "NodeType": "Field",
       "FieldType": "Negate",
       "FunctionType": "First",
-      "Name": "Last",
+      "Name": ".Last",
       "Children": [
         {
           "NodeType": "Text",
