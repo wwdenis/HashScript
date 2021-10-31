@@ -45,7 +45,7 @@
                 {
                   "NodeType": "Field",
                   "FieldType": "Question",
-                  "FieldFunction": "Last",
+                  "FunctionType": "Last",
                   "Name": "Last",
                   "Children": [
                     {
@@ -63,7 +63,7 @@
                 {
                   "NodeType": "Field",
                   "FieldType": "Negate",
-                  "FieldFunction": "First",
+                  "FunctionType": "First",
                   "Name": "First",
                   "Children": [
                     {

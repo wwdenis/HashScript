@@ -5,7 +5,7 @@
     {
       "NodeType": "Field",
       "FieldType": "Negate",
-      "FieldFunction": "First",
+      "FunctionType": "First",
       "Name": "Last",
       "Children": [
         {

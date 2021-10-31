@@ -1,8 +1,6 @@
-using System;
-
 namespace HashScript.Domain
 {
-    public enum FieldFunction
+    public enum FunctionType
     {
         None,
         First,

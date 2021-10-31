@@ -81,10 +81,9 @@ namespace HashScript
                 return null;
             }
 
-            var buffer = new Queue<Token>();
-
-            var error = string.Empty;
-            Token current = null;
+            var nameBuffer = new Queue<Token>();
+            var errorText = string.Empty;
+            Token currentToken = null;
             
             var hasStart = false;
             var hasEnd = false;
@@ -93,14 +92,14 @@ namespace HashScript
             var hasComposite = false;
 
             var fieldType = FieldType.Simple;
-            var fieldFunction = FieldFunction.None;
+            var functionType = FunctionType.None;
 
             while (tokens.Any())
             {
-                current = tokens.Dequeue();
+                currentToken = tokens.Dequeue();
                 hasInvalid = false;
 
-                switch (current.Type)
+                switch (currentToken.Type)
                 {
                     case TokenType.Hash:
                         if (hasStart)
@@ -115,18 +114,18 @@ namespace HashScript
                     case TokenType.Complex:
                     case TokenType.Question:
                     case TokenType.Negate:
-                        if (!hasStart || buffer.Any())
+                        if (!hasStart || nameBuffer.Any())
                         {
                             hasInvalid = true;
                         }
                         else
                         {
                             hasComposite = true;
-                            fieldType = GetFieldType(current);
+                            fieldType = ParseFieldType(currentToken);
                         }
                         break;
                     case TokenType.Dot:
-                        if (!hasComposite || !hasStart || buffer.Any())
+                        if (!hasComposite || !hasStart || nameBuffer.Any())
                         {
                             hasInvalid = true;
                         }
@@ -136,9 +135,9 @@ namespace HashScript
                         }
                         break;
                     case TokenType.Text:
-                        if (HasValidName(current))
+                        if (HasValidName(currentToken))
                         {
-                            buffer.Enqueue(current);
+                            nameBuffer.Enqueue(currentToken);
                         }
                         else
                         {
@@ -159,35 +158,28 @@ namespace HashScript
                 }
             }
 
-            var name = BuildContent(buffer);
+            var fieldName = ParseContent(nameBuffer);
 
-            if (hasFunction)
+            if (hasFunction && !TryParseFunction(fieldName, out functionType))
             {
-                fieldFunction = BuildFunction(name);
-
-                if (fieldFunction == FieldFunction.None)
-                {
-                    error = $"Field contains an invalid function: {name}";
-                }
+                errorText = $"Field contains an invalid function: {fieldName}";
             }
 
-            var node = new FieldNode(name);
-            node.FieldType = fieldType;
-            node.FieldFunction = fieldFunction;
+            var node = new FieldNode(fieldName, fieldType, functionType);
 
             if (hasInvalid)
             {
-                error = $"Field contains an invalid character: {GetTokenContent(current)}";
+                errorText = $"Field contains an invalid character: {ParseContent(currentToken)}";
             }
             else if (!hasEnd)
             {
-                error = "Field does not contains a close Hash";
+                errorText = "Field does not contains a close Hash";
             }
-            else if (string.IsNullOrEmpty(name))
+            else if (string.IsNullOrEmpty(fieldName))
             {
                 if (fieldType == FieldType.Simple)
                 {
-                    error = "Field must contain a valid name";
+                    errorText = "Field must contain a valid name";
                 }
             }
             else if (fieldType != FieldType.Simple)
@@ -196,16 +188,16 @@ namespace HashScript
                 node.Children.AddRange(children);
             }
 
-            if (!string.IsNullOrWhiteSpace(error))
+            if (!string.IsNullOrWhiteSpace(errorText))
             {
-                errors.Add(error);
+                errors.Add(errorText);
                 return null;
             }
 
             return node;
         }
 
-        private TextNode ParseText(Queue<Token> tokens)
+        private static TextNode ParseText(Queue<Token> tokens)
         {
             var invalidTokens = new[] { TokenType.Hash, TokenType.EOF };
             var buffer = new Queue<Token>();
@@ -226,12 +218,12 @@ namespace HashScript
                 return null;
             }
 
-            var content = BuildContent(buffer);
+            var content = ParseContent(buffer);
             var node = new TextNode(content);
             return node;
         }
 
-        private static string BuildContent(Queue<Token> tokens)
+        private static string ParseContent(Queue<Token> tokens)
         {
             if (!tokens.Any())
             {
@@ -245,17 +237,7 @@ namespace HashScript
             return string.Join("", allContent);
         }
 
-        private FieldFunction BuildFunction(string name)
-        {
-            return name?.ToUpperInvariant() switch
-            {
-                "FIRST" => FieldFunction.First,
-                "LAST" => FieldFunction.Last,
-                _ => FieldFunction.None
-            };
-        }
-
-        private static string GetTokenContent(Token token)
+        private static string ParseContent(Token token)
         {
             var type = token.Type;
             
@@ -270,7 +252,7 @@ namespace HashScript
             };
         }
 
-        private static FieldType GetFieldType(Token token)
+        private static FieldType ParseFieldType(Token token)
         {
             var type = token.Type;
             
@@ -281,6 +263,16 @@ namespace HashScript
                 TokenType.Negate => FieldType.Negate,
                 _ => FieldType.Simple
             };
+        }
+
+        private static bool TryParseFunction(string name, out FunctionType type)
+        {
+            if (!Enum.TryParse(name, true, out type))
+            {
+                type = FunctionType.None;
+            }
+
+            return type != FunctionType.None;
         }
 
         private static bool IsCloseNode(FieldNode parent, FieldNode child)
