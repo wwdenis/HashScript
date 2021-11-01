@@ -302,13 +302,17 @@ namespace HashScript
             var index = content.LastIndexOf((char)TokenType.NewLine);
             if (index >= 0)
             {
-                content = content.Remove(index);
+                var hasText = content.Substring(index).TrimEnd().Any();
+                if (!hasText)
+                {
+                    content = content.Remove(index);
+                }
+                if (string.IsNullOrEmpty(content))
+                {
+                    return last;
+                }
             }
-            if (string.IsNullOrEmpty(content))
-            {
-                return last;
-            }
-
+            
             last.Content = content;
             return null;
         }
