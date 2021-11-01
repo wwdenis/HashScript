@@ -31,26 +31,39 @@ namespace HashScript
             return doc;
         }
 
-        private List<Node> ParseChildren(Queue<Token> tokens, List<string> errors, FieldNode parent = null)
+        private IEnumerable<Node> ParseChildren(Queue<Token> tokens, List<string> errors, FieldNode parent = null)
         {
             var nodes = new List<Node>();
             var hasCloseNode = false;
             
             while (tokens.Any())
             {
-                Node node = ParseText(tokens);
+                var textNode = ParseText(tokens);
 
-                if (node is null)
+                if (textNode is not null)
                 {
-                    node = ParseField(tokens, errors, parent, out hasCloseNode);
+                    nodes.Add(textNode);
                 }
+                else
+                {
+                    var fieldNode = ParseField(tokens, errors, parent, out hasCloseNode);
+                    var emptyText = NormalizeSpace(nodes, fieldNode, hasCloseNode);
 
-                if (node is null)
-                {
-                    break;
+                    if (emptyText is not null)
+                    {
+                        nodes.Remove(emptyText);
+                    }
+
+                    if (fieldNode is not null)
+                    {
+                        nodes.Add(fieldNode);
+                    }
+                    else
+                    {
+                        break;
+                    }
+
                 }
-                
-                nodes.Add(node);
             }
 
             if (!hasCloseNode && parent is not null)
@@ -62,9 +75,9 @@ namespace HashScript
             return nodes;
         }
 
-        private FieldNode ParseField(Queue<Token> tokens, List<string> errors, FieldNode parent, out bool hasCloseNode)
+        private FieldNode ParseField(Queue<Token> tokens, List<string> errors, FieldNode parent, out bool isClose)
         {
-            hasCloseNode = false;
+            isClose = false;
 
             if (!tokens.Any() || tokens.Peek().Type != TokenType.Hash)
             {
@@ -79,7 +92,7 @@ namespace HashScript
             var hasEnd = false;
             var hasInvalid = false;
             var hasFunction = false;
-            var hasComposite = false;
+            var hasNested = false;
 
             var fieldType = FieldType.Simple;
 
@@ -109,12 +122,12 @@ namespace HashScript
                         }
                         else
                         {
-                            hasComposite = true;
+                            hasNested = true;
                             fieldType = ParseFieldType(currentToken);
                         }
                         break;
                     case TokenType.Dot:
-                        if (!hasComposite || !hasStart || nameBuffer.Any())
+                        if (!hasNested || !hasStart || nameBuffer.Any())
                         {
                             hasInvalid = true;
                         }
@@ -169,7 +182,7 @@ namespace HashScript
                 }
                 else if (fieldType == parent.FieldType)
                 {
-                    hasCloseNode = true;
+                    isClose = true;
                     return null;
                 }
             }
@@ -272,6 +285,32 @@ namespace HashScript
         private static bool HasValidName(Token token)
         {
             return token.Content?.All(i => char.IsLetterOrDigit(i)) ?? false;
+        }
+
+        private TextNode NormalizeSpace(List<Node> nodes, FieldNode field, bool isClose)
+        {
+            var nestedTypes = new FieldType?[] { FieldType.Complex, FieldType.Question, FieldType.Negate };
+            var isOpen = nestedTypes.Contains(field?.FieldType);
+            var last = nodes.LastOrDefault() as TextNode;
+
+            if (last is null || (!isClose && !isOpen))
+            {
+                return null;
+            }
+
+            var content = last.Content;
+            var index = content.LastIndexOf((char)TokenType.NewLine);
+            if (index >= 0)
+            {
+                content = content.Remove(index);
+            }
+            if (string.IsNullOrEmpty(content))
+            {
+                return last;
+            }
+
+            last.Content = content;
+            return null;
         }
     }
 }

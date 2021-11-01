@@ -8,20 +8,10 @@
       "Name": "Items",
       "Children": [
         {
-          "NodeType": "Text",
-          "Content": "\n\t",
-          "Children": []
-        },
-        {
           "NodeType": "Field",
           "FieldType": "Question",
           "Name": "HasItems",
           "Children": [
-            {
-              "NodeType": "Text",
-              "Content": "\n\t\t",
-              "Children": []
-            },
             {
               "NodeType": "Field",
               "FieldType": "Negate",
@@ -38,11 +28,6 @@
                   "Children": []
                 },
                 {
-                  "NodeType": "Text",
-                  "Content": "\n\t\t\t",
-                  "Children": []
-                },
-                {
                   "NodeType": "Field",
                   "FieldType": "Question",
                   "FunctionType": "Last",
@@ -56,11 +41,6 @@
                   ]
                 },
                 {
-                  "NodeType": "Text",
-                  "Content": "\n\t\t\t",
-                  "Children": []
-                },
-                {
                   "NodeType": "Field",
                   "FieldType": "Negate",
                   "FunctionType": "First",
@@ -72,25 +52,10 @@
                       "Children": []
                     }
                   ]
-                },
-                {
-                  "NodeType": "Text",
-                  "Content": "\n\t\t",
-                  "Children": []
                 }
               ]
-            },
-            {
-              "NodeType": "Text",
-              "Content": "\n\t",
-              "Children": []
             }
           ]
-        },
-        {
-          "NodeType": "Text",
-          "Content": "\n",
-          "Children": []
         }
       ]
     }
