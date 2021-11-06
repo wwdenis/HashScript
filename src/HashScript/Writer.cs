@@ -109,7 +109,7 @@ namespace HashScript
         {
             var result = new List<Dictionary<string, object>>();
 
-            if (value is Dictionary<string, object>[] collection)
+            if (value is IEnumerable<Dictionary<string, object>> collection)
             {
                 result.AddRange(collection);
             }
