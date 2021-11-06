@@ -96,7 +96,9 @@ namespace HashScript
         static TokenType BuildType(int charIndex)
         {
             charIndex = charIndex == '\r' ? '\n' : charIndex;
-            return Enum.IsDefined((TokenType)charIndex) ? (TokenType)charIndex :TokenType.Text;
+            var tokeType = (TokenType)charIndex;
+            var types = Enum.GetValues(typeof(TokenType)) as TokenType[];
+            return types.Contains(tokeType) ? tokeType : TokenType.Text;
         }
     }
 }

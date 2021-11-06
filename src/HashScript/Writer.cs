@@ -131,11 +131,23 @@ namespace HashScript
             foreach (var item in result)
             {
                 pos++;
-                item.TryAdd(".First", pos == 1);
-                item.TryAdd(".Last", pos == result.Count);
+                TryAdd(item, ".First", pos == 1);
+                TryAdd(item, ".Last", pos == result.Count);
             }
 
             return result;
+        }
+
+        private static void TryAdd(Dictionary<string, object> data, string key, object value)
+        {
+            if (data.ContainsKey(key))
+            {
+                data[key] = value;
+            }
+            else
+            {
+                data.Add(key, value);
+            }
         }
 
         private static bool GetCondition(object value)

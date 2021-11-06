@@ -272,7 +272,8 @@ namespace HashScript
 
         private static bool TryParseFunction(string name, out FunctionType type)
         {
-            var isFunction = name?.StartsWith((char)TokenType.Dot) ?? false;
+            var dot = $"{(char)TokenType.Dot}";
+            var isFunction = name?.StartsWith(dot) ?? false;
             
             if (!isFunction || !Enum.TryParse(name.Remove(0, 1), true, out type))
             {

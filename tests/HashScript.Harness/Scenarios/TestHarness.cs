@@ -32,13 +32,13 @@ namespace HashScript.Harness.Scenarios
             var result = new Dictionary<string, string>();
             var templates = ReadFiles(TemplateFolder, "hs");
             
-            foreach (var (name, contents) in templates)
+            foreach (var template in templates)
             {
-                var parser = new Parser(contents);
+                var parser = new Parser(template.Value);
                 var doc = parser.Parse();
                 var output = Serialize(doc);
 
-                result.Add(name, output);
+                result.Add(template.Key, output);
             }
 
             return result;
