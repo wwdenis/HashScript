@@ -51,8 +51,6 @@ namespace HashScript.Harness.Scenarios
             var templates = ReadFiles(TemplateFolder, "hs");
             var contents = ReadFiles(ContentFolder, "json");
 
-            var dir = new DirectoryInfo(ContentFolder);
-            
             foreach (var content in contents)
             {
                 var data = Deserialize(content.Value);
