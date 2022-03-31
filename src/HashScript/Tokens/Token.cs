@@ -1,6 +1,6 @@
 using System;
 
-namespace HashScript.Domain
+namespace HashScript.Tokens
 {
     public class Token
     {

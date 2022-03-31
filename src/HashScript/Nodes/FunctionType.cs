@@ -1,4 +1,4 @@
-namespace HashScript.Domain
+namespace HashScript.Nodes
 {
     public enum FunctionType
     {

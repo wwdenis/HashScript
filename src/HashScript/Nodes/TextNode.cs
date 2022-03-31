@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HashScript.Domain
+namespace HashScript.Nodes
 {
     public sealed class TextNode : Node
     {

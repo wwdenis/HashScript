@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using HashScript.Domain;
+using HashScript.Nodes;
 using Newtonsoft.Json.Converters;
 
 namespace HashScript.Harness.Scenarios

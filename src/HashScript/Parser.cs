@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using HashScript.Domain;
+using HashScript.Nodes;
+using HashScript.Tokens;
 
 namespace HashScript
 {

@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Xunit;
-using HashScript.Domain;
+using HashScript.Nodes;
 using HashScript.Tests.Infrastructure;
 
 namespace HashScript.Tests

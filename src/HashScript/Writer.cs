@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using HashScript.Domain;
+using HashScript.Nodes;
 
 namespace HashScript
 {
