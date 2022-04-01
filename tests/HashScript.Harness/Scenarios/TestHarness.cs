@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using HashScript.Nodes;
+using HashScript.Providers;
 using Newtonsoft.Json.Converters;
 
 namespace HashScript.Harness.Scenarios
@@ -18,8 +19,9 @@ namespace HashScript.Harness.Scenarios
             
             foreach (var (name, template, input) in scenarios)
             {
+                var data = new DictionaryValueProvider(input);
                 var writer = new Writer(template);
-                var output = writer.Generate(input);
+                var output = writer.Generate(data);
 
                 result.Add(name, output);
             }

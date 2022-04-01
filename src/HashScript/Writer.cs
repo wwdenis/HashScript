@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using HashScript.Nodes;
+using HashScript.Providers;
 
 namespace HashScript
 {
@@ -16,7 +16,7 @@ namespace HashScript
             this.template = template;
         }
 
-        public string Generate(Dictionary<string, object> data)
+        public string Generate(IValueProvider data)
         {
             if (data is null)
             {
@@ -34,7 +34,7 @@ namespace HashScript
             return RenderChildren(doc, data);
         }
 
-        private static string RenderChildren(Node parent, Dictionary<string, object> data)
+        private static string RenderChildren(Node parent, IValueProvider data)
         {
             var builder = new StringBuilder();
 
@@ -54,15 +54,15 @@ namespace HashScript
             return builder.ToString();
         }
 
-        private static string RenderField(FieldNode field, Dictionary<string, object> data)
+        private static string RenderField(FieldNode field, IValueProvider data)
         {
             var builder = new StringBuilder();
 
-            var rawValue = GetRawValue(data, field);
+            var rawValue = data.GetValue(field);
             var contition = GetCondition(field, data);
 
             var renderChild = false;
-            var renderData = Enumerable.Empty<Dictionary<string, object>>();
+            var renderData = Enumerable.Empty<IValueProvider>();
 
             switch (field.FieldType)
             {
@@ -79,7 +79,7 @@ namespace HashScript
                     break;
                 case FieldType.Complex:
                     renderChild = true;
-                    renderData = GetTreeData(rawValue);;
+                    renderData = data.GetChildren(field);
                     break;
             }
 
@@ -95,76 +95,14 @@ namespace HashScript
             return builder.ToString();
         }
 
-        private static object GetRawValue(Dictionary<string, object> data, FieldNode fieldNode)
-        {
-            if (data.TryGetValue(fieldNode.Name, out var value))
-            {
-                return value;
-            }
-
-            return null;
-        }
-
-        private static IEnumerable<Dictionary<string, object>> GetTreeData(object value)
-        {
-            var result = new List<Dictionary<string, object>>();
-
-            if (value is IEnumerable<Dictionary<string, object>> collection)
-            {
-                result.AddRange(collection);
-            }
-            else if (value is Dictionary<string, object> single)
-            {
-                result.Add(single);
-            }
-            else if (value is not null)
-            {
-                var empty = new Dictionary<string, object>
-                {
-                    { "", value },
-                };
-                result.Add(empty);
-            }
-
-            var pos = 0;
-
-            foreach (var item in result)
-            {
-                pos++;
-                if (pos == 1)
-                {
-                    TryAdd(item, ".First", true);
-                }
-                if (pos == result.Count)
-                {
-                    TryAdd(item, ".Last", true);
-                }
-            }
-
-            return result;
-        }
-
-        private static void TryAdd(Dictionary<string, object> data, string key, object value)
-        {
-            if (data.ContainsKey(key))
-            {
-                data[key] = value;
-            }
-            else
-            {
-                data.Add(key, value);
-            }
-        }
-
-        private static bool GetCondition(FieldNode field, Dictionary<string, object> data)
+        private static bool GetCondition(FieldNode field, IValueProvider data)
         {
             if (field.IsFunction)
             {
-                var functionName = $".{field.Name}";
-                return data.ContainsKey(functionName);
+                return data.Functions.Contains(field.Name);
             }
 
-            var value = GetRawValue(data, field);
+            var value = data.GetValue(field);
 
             if (value is bool contition)
             {
