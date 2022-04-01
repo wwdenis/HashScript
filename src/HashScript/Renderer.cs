@@ -7,11 +7,11 @@ using HashScript.Providers;
 
 namespace HashScript
 {
-    public sealed class Writer
+    public sealed class Renderer
     {
         readonly string template;
 
-        public Writer(string template)
+        public Renderer(string template)
         {
             this.template = template;
         }
