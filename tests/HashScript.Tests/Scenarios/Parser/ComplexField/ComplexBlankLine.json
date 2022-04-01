@@ -1,0 +1,28 @@
+﻿{
+  "NodeType": "Document",
+  "Errors": [],
+  "Children": [
+    {
+      "NodeType": "Text",
+      "Content": "First\n",
+      "Children": []
+    },
+    {
+      "NodeType": "Field",
+      "FieldType": "Complex",
+      "Name": "Items",
+      "Children": [
+        {
+          "NodeType": "Text",
+          "Content": "\nSecond\n",
+          "Children": []
+        }
+      ]
+    },
+    {
+      "NodeType": "Text",
+      "Content": "\nThird",
+      "Children": []
+    }
+  ]
+}

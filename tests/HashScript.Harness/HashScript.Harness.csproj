@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <None Update="Templates\**\*.*" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Contents\**\*.*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

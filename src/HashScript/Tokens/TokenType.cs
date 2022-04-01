@@ -1,6 +1,6 @@
 using System;
 
-namespace HashScript.Domain
+namespace HashScript.Tokens
 {
     public enum TokenType : int
     {
@@ -14,6 +14,5 @@ namespace HashScript.Domain
         Dot = '.',
         Question = '?',
         Negate = '!',
-        Value = '$',
     }
 }

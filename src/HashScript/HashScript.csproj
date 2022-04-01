@@ -1,17 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-	  <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
     <AssemblyName>HashScript</AssemblyName>
     <PackageId>HashScript</PackageId>
     <Product>HashScript</Product>
     <Title>HashScript</Title>
     <Version>0.0.1</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageVersion>0.0.1</PackageVersion>
     <AssemblyVersion>0.0.1</AssemblyVersion>
     <Authors>Denis Da Silva</Authors>
     <Company>Denis Da Silva</Company>
     <Copyright>Copyright © Denis Silva Da Silva 2021</Copyright>
+    <PackageTags>Parser;Scanner;Lexer;Scripting;Syntax;Semantics;HashScript</PackageTags>
+    <Description>
+      HashScript is a simple and powerful scripting language , intended to be lightweight, easy to learn, and still powerful.
+      For this release see notes https://github.com/wwdenis/HashScript/
+    </Description>
+    <RepositoryUrl>https://github.com/wwdenis/HashScript/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
-
 </Project>

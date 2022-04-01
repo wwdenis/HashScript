@@ -5,8 +5,8 @@
     {
       "NodeType": "Field",
       "FieldType": "Negate",
-      "FieldFunction": "IsLast",
-      "Name": "Last",
+      "FunctionType": "Last",
+      "Name": ".Last",
       "Children": [
         {
           "NodeType": "Text",

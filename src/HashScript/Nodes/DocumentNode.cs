@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace HashScript.Domain
+namespace HashScript.Nodes
 {
     public sealed class DocumentNode : Node
     {
