@@ -1,9 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
-using HashScript.Domain;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System.Linq;
+using HashScript.Harness.Scenarios;
 
 namespace HashScript.Harness
 {
@@ -15,49 +13,24 @@ namespace HashScript.Harness
         {
             Console.WriteLine(DateTime.Now);
 
-            var templates = ReadTemplates();
-            
-            foreach (var (name, contents) in templates)
-            {
-                var parser = new Parser(contents);
-                var result = parser.Parse();
-                var output = Serialize(result);
+            var results = new Dictionary<string, string>();
 
+            if (args.Contains("-parse"))
+            {
+                results = TestHarness.ParseAll();
+            }
+            else
+            {
+                results = TestHarness.WriteAll();
+            }
+            
+            foreach (var (name, output) in results)
+            {
                 Console.WriteLine($"File: {name}");
                 Console.WriteLine(output);
             }
 
             Console.WriteLine(" *** END *** ");
-        }
-
-        static Dictionary<string, string> ReadTemplates()
-        {
-            var result = new Dictionary<string, string>();
-            var dir = new DirectoryInfo(TemplateFolder);
-            var files = dir.EnumerateFiles("*.txt");
-            
-            foreach (var file in files)
-            {
-                var contents = File.ReadAllText(file.FullName);
-                result.Add(file.Name, contents);
-            }
-
-            return result;
-        }
-
-        static string Serialize(Node node)
-        {
-            var settings = new JsonSerializerSettings
-            {
-                Formatting = Formatting.Indented,
-                DefaultValueHandling = DefaultValueHandling.Ignore,
-                Converters = new[]
-                {
-                    new StringEnumConverter()
-                },
-            };
-
-            return JsonConvert.SerializeObject(node, settings);
         }
     }
 }

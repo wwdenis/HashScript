@@ -8,20 +8,10 @@
       "Name": "Items",
       "Children": [
         {
-          "NodeType": "Text",
-          "Content": "\n\t",
-          "Children": []
-        },
-        {
           "NodeType": "Field",
           "FieldType": "Question",
           "Name": "HasItems",
           "Children": [
-            {
-              "NodeType": "Text",
-              "Content": "\n\t\t",
-              "Children": []
-            },
             {
               "NodeType": "Field",
               "FieldType": "Negate",
@@ -38,26 +28,10 @@
                   "Children": []
                 },
                 {
-                  "NodeType": "Text",
-                  "Content": "\n\t\t\t",
-                  "Children": []
-                },
-                {
-                  "NodeType": "Field",
-                  "FieldFunction": "GetValue",
-                  "Name": "$",
-                  "Children": []
-                },
-                {
-                  "NodeType": "Text",
-                  "Content": "\n\t\t\t",
-                  "Children": []
-                },
-                {
                   "NodeType": "Field",
                   "FieldType": "Question",
-                  "FieldFunction": "IsLast",
-                  "Name": "Last",
+                  "FunctionType": "Last",
+                  "Name": ".Last",
                   "Children": [
                     {
                       "NodeType": "Text",
@@ -67,15 +41,10 @@
                   ]
                 },
                 {
-                  "NodeType": "Text",
-                  "Content": "\n\t\t\t",
-                  "Children": []
-                },
-                {
                   "NodeType": "Field",
                   "FieldType": "Negate",
-                  "FieldFunction": "IsFirst",
-                  "Name": "First",
+                  "FunctionType": "First",
+                  "Name": ".First",
                   "Children": [
                     {
                       "NodeType": "Text",
@@ -83,25 +52,10 @@
                       "Children": []
                     }
                   ]
-                },
-                {
-                  "NodeType": "Text",
-                  "Content": "\n\t\t",
-                  "Children": []
                 }
               ]
-            },
-            {
-              "NodeType": "Text",
-              "Content": "\n\t",
-              "Children": []
             }
           ]
-        },
-        {
-          "NodeType": "Text",
-          "Content": "\n",
-          "Children": []
         }
       ]
     }

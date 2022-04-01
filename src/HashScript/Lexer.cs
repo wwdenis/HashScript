@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using HashScript.Domain;
+using HashScript.Tokens;
 
 namespace HashScript
 {
@@ -73,7 +73,6 @@ namespace HashScript
                     case TokenType.Dot:
                     case TokenType.Question:
                     case TokenType.Negate:
-                    case TokenType.Value:
                         length = 1;
                         createToken = true;
                         break;
@@ -97,7 +96,9 @@ namespace HashScript
         static TokenType BuildType(int charIndex)
         {
             charIndex = charIndex == '\r' ? '\n' : charIndex;
-            return Enum.IsDefined((TokenType)charIndex) ? (TokenType)charIndex :TokenType.Text;
+            var tokeType = (TokenType)charIndex;
+            var types = Enum.GetValues(typeof(TokenType)) as TokenType[];
+            return types.Contains(tokeType) ? tokeType : TokenType.Text;
         }
     }
 }

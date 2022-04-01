@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using HashScript.Domain;
+using HashScript.Nodes;
+using HashScript.Tokens;
 
 namespace HashScript
 {
@@ -31,7 +32,7 @@ namespace HashScript
             return doc;
         }
 
-        private List<Node> ParseChildren(Queue<Token> tokens, List<string> errors, FieldNode parent = null)
+        private IEnumerable<Node> ParseChildren(Queue<Token> tokens, List<string> errors, FieldNode parent = null)
         {
             var nodes = new List<Node>();
             var hasCloseNode = false;
@@ -46,22 +47,23 @@ namespace HashScript
                 }
                 else
                 {
-                    var fieldNode = ParseField(tokens, errors);
-                    hasCloseNode = IsCloseNode(parent, fieldNode);
+                    var fieldNode = ParseField(tokens, errors, parent, out hasCloseNode);
+                    var emptyText = NormalizeSpace(nodes, fieldNode, hasCloseNode);
 
-                    if (fieldNode is null || hasCloseNode)
+                    if (emptyText is not null)
                     {
-                        break;
+                        nodes.Remove(emptyText);
                     }
-                    else if (string.IsNullOrEmpty(fieldNode.Name))
-                    {
-                        var error = "Field must contain a valid name";
-                        errors.Add(error);
-                    }
-                    else
+
+                    if (fieldNode is not null)
                     {
                         nodes.Add(fieldNode);
                     }
+                    else
+                    {
+                        break;
+                    }
+
                 }
             }
 
@@ -74,33 +76,33 @@ namespace HashScript
             return nodes;
         }
 
-        private FieldNode ParseField(Queue<Token> tokens, List<string> errors)
+        private FieldNode ParseField(Queue<Token> tokens, List<string> errors, FieldNode parent, out bool isClose)
         {
+            isClose = false;
+
             if (!tokens.Any() || tokens.Peek().Type != TokenType.Hash)
             {
                 return null;
             }
 
-            var buffer = new Queue<Token>();
-
-            var error = string.Empty;
-            Token current = null;
+            var nameBuffer = new Queue<Token>();
+            var errorText = string.Empty;
+            Token currentToken = null;
             
             var hasStart = false;
             var hasEnd = false;
             var hasInvalid = false;
             var hasFunction = false;
-            var hasComposite = false;
+            var hasNested = false;
 
             var fieldType = FieldType.Simple;
-            var fieldFunction = FieldFunction.None;
 
             while (tokens.Any())
             {
-                current = tokens.Dequeue();
+                currentToken = tokens.Dequeue();
                 hasInvalid = false;
 
-                switch (current.Type)
+                switch (currentToken.Type)
                 {
                     case TokenType.Hash:
                         if (hasStart)
@@ -115,49 +117,36 @@ namespace HashScript
                     case TokenType.Complex:
                     case TokenType.Question:
                     case TokenType.Negate:
-                        if (!hasStart || buffer.Any())
+                        if (!hasStart || nameBuffer.Any())
                         {
                             hasInvalid = true;
                         }
                         else
                         {
-                            hasComposite = true;
-                            fieldType = GetFieldType(current);
+                            hasNested = true;
+                            fieldType = ParseFieldType(currentToken);
                         }
                         break;
                     case TokenType.Dot:
-                        if (!hasComposite || !hasStart || buffer.Any())
+                        if (!hasNested || !hasStart || nameBuffer.Any())
                         {
                             hasInvalid = true;
                         }
                         else
                         {
+                            nameBuffer.Enqueue(currentToken);
                             hasFunction = true;
-                        }
-                        break;
-                    case TokenType.Value:
-                        if (!hasStart || buffer.Any())
-                        {
-                            hasInvalid = true;
-                        }
-                        else
-                        {
-                            hasFunction = true;
-                            buffer.Enqueue(current);
                         }
                         break;
                     case TokenType.Text:
-                        if (HasValidName(current))
+                        if (HasValidName(currentToken))
                         {
-                            buffer.Enqueue(current);
+                            nameBuffer.Enqueue(currentToken);
                         }
                         else
                         {
                             hasInvalid = true;
                         }
-                        break;
-                    case TokenType.EOF:
-                        hasInvalid = false;
                         break;
                     default:
                         hasInvalid = true;
@@ -170,53 +159,51 @@ namespace HashScript
                 }
             }
 
-            var name = BuildContent(buffer);
-
-            if (hasFunction)
-            {
-                fieldFunction = BuildFunction(name);
-
-                if (fieldFunction == FieldFunction.None)
-                {
-                    error = $"Field contains an invalid function: {name}";
-                }
-            }
-
-            var node = new FieldNode(name);
-            node.FieldType = fieldType;
-            node.FieldFunction = fieldFunction;
+            var fieldName = ParseContent(nameBuffer);
+            var validFunction = TryParseFunction(fieldName, out var functionType);
+            var node = new FieldNode(fieldName, fieldType, functionType);
 
             if (hasInvalid)
             {
-                error = $"Field contains an invalid character: {GetTokenContent(current)}";
+                errorText = $"Field contains an invalid character: {ParseContent(currentToken)}";
             }
             else if (!hasEnd)
             {
-                error = "Field does not contains a close Hash";
+                errorText = "Field does not contains a close Hash";
             }
-            else if (string.IsNullOrEmpty(name))
+            else if (hasFunction && !validFunction)
             {
-                if (fieldType == FieldType.Simple)
+                errorText = $"Field contains an invalid function: {fieldName}";
+            }
+            else if (string.IsNullOrEmpty(fieldName))
+            {
+                if (fieldType == FieldType.Simple || parent is null)
                 {
-                    error = "Field must contain a valid name";
+                    errorText = "Field must contain a valid name";
+                }
+                else if (fieldType == parent.FieldType)
+                {
+                    isClose = true;
+                    return null;
                 }
             }
-            else if (fieldType != FieldType.Simple)
+
+            if (!string.IsNullOrWhiteSpace(errorText))
+            {
+                errors.Add(errorText);
+                return null;
+            }
+
+            if (fieldType != FieldType.Simple)
             {
                 var children = ParseChildren(tokens, errors, node);
                 node.Children.AddRange(children);
             }
 
-            if (!string.IsNullOrWhiteSpace(error))
-            {
-                errors.Add(error);
-                return null;
-            }
-
             return node;
         }
 
-        private TextNode ParseText(Queue<Token> tokens)
+        private static TextNode ParseText(Queue<Token> tokens)
         {
             var invalidTokens = new[] { TokenType.Hash, TokenType.EOF };
             var buffer = new Queue<Token>();
@@ -237,12 +224,12 @@ namespace HashScript
                 return null;
             }
 
-            var content = BuildContent(buffer);
+            var content = ParseContent(buffer);
             var node = new TextNode(content);
             return node;
         }
 
-        private static string BuildContent(Queue<Token> tokens)
+        private static string ParseContent(Queue<Token> tokens)
         {
             if (!tokens.Any())
             {
@@ -256,18 +243,7 @@ namespace HashScript
             return string.Join("", allContent);
         }
 
-        private FieldFunction BuildFunction(string name)
-        {
-            return name?.ToUpperInvariant() switch
-            {
-                "$" => FieldFunction.GetValue,
-                "FIRST" => FieldFunction.IsFirst,
-                "LAST" => FieldFunction.IsLast,
-                _ => FieldFunction.None
-            };
-        }
-
-        private static string GetTokenContent(Token token)
+        private static string ParseContent(Token token)
         {
             var type = token.Type;
             
@@ -282,7 +258,7 @@ namespace HashScript
             };
         }
 
-        private static FieldType GetFieldType(Token token)
+        private static FieldType ParseFieldType(Token token)
         {
             var type = token.Type;
             
@@ -295,18 +271,52 @@ namespace HashScript
             };
         }
 
-        private static bool IsCloseNode(FieldNode parent, FieldNode child)
+        private static bool TryParseFunction(string name, out FunctionType type)
         {
-            return
-                child is not null &&
-                parent is not null && 
-                child.FieldType == parent.FieldType &&
-                string.IsNullOrEmpty(child.Name);
+            var dot = $"{(char)TokenType.Dot}";
+            var isFunction = name?.StartsWith(dot) ?? false;
+            
+            if (!isFunction || !Enum.TryParse(name.Remove(0, 1), true, out type))
+            {
+                type = FunctionType.None;
+            }
+
+            return type != FunctionType.None;
         }
 
         private static bool HasValidName(Token token)
         {
-            return token.Content?.All(i => Char.IsLetterOrDigit(i)) ?? false;
+            return token.Content?.All(i => char.IsLetterOrDigit(i)) ?? false;
+        }
+
+        private TextNode NormalizeSpace(List<Node> nodes, FieldNode field, bool isClose)
+        {
+            var nestedTypes = new FieldType?[] { FieldType.Complex, FieldType.Question, FieldType.Negate };
+            var isOpen = nestedTypes.Contains(field?.FieldType);
+            var last = nodes.LastOrDefault() as TextNode;
+
+            if (last is null || (!isClose && !isOpen))
+            {
+                return null;
+            }
+
+            var content = last.Content;
+            var index = content.LastIndexOf((char)TokenType.NewLine);
+            if (index >= 0)
+            {
+                var hasText = content.Substring(index).TrimEnd().Any();
+                if (!hasText)
+                {
+                    content = content.Remove(index);
+                }
+                if (string.IsNullOrEmpty(content))
+                {
+                    return last;
+                }
+            }
+            
+            last.Content = content;
+            return null;
         }
     }
 }

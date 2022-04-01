@@ -1,6 +1,6 @@
 using System;
 
-namespace HashScript.Domain
+namespace HashScript.Nodes
 {
     public enum FieldType
     {

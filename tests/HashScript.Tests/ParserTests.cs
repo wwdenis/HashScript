@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Xunit;
-using HashScript.Domain;
+using HashScript.Nodes;
 using HashScript.Tests.Infrastructure;
 
 namespace HashScript.Tests
@@ -45,7 +45,7 @@ namespace HashScript.Tests
         [FileData("Errors", "SimpleField", "WithNewLine")]
         [FileData("Errors", "SimpleField", "WithSpace")]
         [FileData("Errors", "SimpleField", "WithTab")]
-        [FileData("Errors", "SimpleField", "WithValueSign")]
+        [FileData("Errors", "SimpleField", "WithCurrency")]
         public void Should_Fail_SimpleField(string template, Node expected)
         {
             var subject = new Parser(template);
@@ -58,7 +58,6 @@ namespace HashScript.Tests
 
         [Theory]
         [FileData("Parser", "ComplexField", "QuestionSingle")]
-        [FileData("Parser", "ComplexField", "ValueSingle")]
         [FileData("Parser", "ComplexField", "ComplexSingle")]
         [FileData("Parser", "ComplexField", "ComplexNested")]
         [FileData("Parser", "ComplexField", "NegateSingle")]
