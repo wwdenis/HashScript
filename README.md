@@ -25,15 +25,16 @@ A field is a placeholder for a dynamic content.
 | **+** | Indicates a `Structured Field` (inside a field) |
 | **?** | Indicates a `Conditional Field` (inside a field) |
 | **!** | Indicates a `Conditional Field` (inside a field, negate) |
-| **.** | Indicates a `Function` (ex. `.IsFirst`, `IsLast` )  |
+| **.** | Indicates a `Function Field` |
 
 ## Field Types
 
 | Type | Example | Note |
 | -- | -- | -- |
-| Content Field | `#Name#` | A placeholder to render data. |
-| Structured Field | `#+Address# Foo #+# `| Renders data below the data structure |
-| Confitional Field | `#?HasItems# Foo #?# `| Renders when condition is `True` (use `!` for `False`) |
+| Content Field | `#Foo#` | A placeholder to render data. |
+| Structured Field | `#+Foo# Text #+# `| Renders data below the data structure |
+| Confitional Field | `#?Foo# Text #?# `| Renders when condition is `True` (use `!` for `False`) |
+| Function Field | `#?.Foo# Text #?# `| Renders when the function `Foo` is `True` |
 
 ## Conditional Fields
 `Conditional Field` is very flexible and can work with the followiung data types:
@@ -42,16 +43,17 @@ A field is a placeholder for a dynamic content.
 - **Text**: `True` when it has length
 - **Collection**: `True` when it has items
 
-## Special Functions
-Field Functions are set of predefined functions, used to help to navigate between collection items.
-- **IsFirst**: Returns `True` when the item is the first in the colection
-- **IsLast**: Returns `False` when the item is the last in the colection
+## Function Fields
+`Function Field` is used to give the Renderer additional data.
 
+For example, in the `ObjectValueProvider` the following functions are defined:
+- **.First**: Returns `True` when the item is the first in the colection
+- **.Last**: Returns `False` when the item is the last in the colection
 
 ### Syntax Example:
 ```
 #+Items#
-   #?.IsFirst# Foo #?#
+   #?.First# Foo #?#
 #+# 
 ```
 
@@ -316,7 +318,7 @@ Field Functions are set of predefined functions, used to help to navigate betwee
   ```
 
   #+Languages#
-    #Name# #!.IsLast# > #!#
+    #Name# #!.Last# > #!#
   #+#
 
   ```
