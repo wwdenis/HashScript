@@ -134,7 +134,6 @@ namespace HashScript
                         }
                         else
                         {
-                            nameBuffer.Enqueue(currentToken);
                             hasFunction = true;
                         }
                         break;
@@ -160,8 +159,7 @@ namespace HashScript
             }
 
             var fieldName = ParseContent(nameBuffer);
-            var validFunction = TryParseFunction(fieldName, out var functionType);
-            var node = new FieldNode(fieldName, fieldType, functionType);
+            var node = new FieldNode(fieldName, fieldType, hasFunction);
 
             if (hasInvalid)
             {
@@ -170,10 +168,6 @@ namespace HashScript
             else if (!hasEnd)
             {
                 errorText = "Field does not contains a close Hash";
-            }
-            else if (hasFunction && !validFunction)
-            {
-                errorText = $"Field contains an invalid function: {fieldName}";
             }
             else if (string.IsNullOrEmpty(fieldName))
             {
@@ -269,19 +263,6 @@ namespace HashScript
                 TokenType.Negate => FieldType.Negate,
                 _ => FieldType.Simple
             };
-        }
-
-        private static bool TryParseFunction(string name, out FunctionType type)
-        {
-            var dot = $"{(char)TokenType.Dot}";
-            var isFunction = name?.StartsWith(dot) ?? false;
-            
-            if (!isFunction || !Enum.TryParse(name.Remove(0, 1), true, out type))
-            {
-                type = FunctionType.None;
-            }
-
-            return type != FunctionType.None;
         }
 
         private static bool HasValidName(Token token)

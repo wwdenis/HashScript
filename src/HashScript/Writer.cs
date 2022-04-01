@@ -59,7 +59,7 @@ namespace HashScript
             var builder = new StringBuilder();
 
             var rawValue = GetRawValue(data, field);
-            var contition = GetCondition(rawValue);
+            var contition = GetCondition(field, data);
 
             var renderChild = false;
             var renderData = Enumerable.Empty<Dictionary<string, object>>();
@@ -131,8 +131,14 @@ namespace HashScript
             foreach (var item in result)
             {
                 pos++;
-                TryAdd(item, ".First", pos == 1);
-                TryAdd(item, ".Last", pos == result.Count);
+                if (pos == 1)
+                {
+                    TryAdd(item, ".First", true);
+                }
+                if (pos == result.Count)
+                {
+                    TryAdd(item, ".Last", true);
+                }
             }
 
             return result;
@@ -150,8 +156,16 @@ namespace HashScript
             }
         }
 
-        private static bool GetCondition(object value)
+        private static bool GetCondition(FieldNode field, Dictionary<string, object> data)
         {
+            if (field.IsFunction)
+            {
+                var functionName = $".{field.Name}";
+                return data.ContainsKey(functionName);
+            }
+
+            var value = GetRawValue(data, field);
+
             if (value is bool contition)
             {
                 return contition;

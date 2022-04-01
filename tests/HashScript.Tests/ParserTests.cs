@@ -74,7 +74,6 @@ namespace HashScript.Tests
         }
 
         [Theory]
-        [FileData("Errors", "ComplexField", "InvalidFunction")]
         [FileData("Errors", "ComplexField", "NoCloseHash")]
         [FileData("Errors", "ComplexField", "NoCloseNode")]
         [FileData("Errors", "ComplexField", "NoName")]
