@@ -26,7 +26,7 @@ jobs:
     name: pack & publish
     runs-on: ubuntu-latest
     needs: build
-    if: contains(github.ref, 'master')
+    if: contains(github.ref, 'main')
     steps:
     - name: Publish
       id: publish_nuget
