@@ -58,6 +58,11 @@ namespace HashScript
         {
             var builder = new StringBuilder();
 
+            if (field.IsValue)
+            {
+                return $"{data.GetValue()}";
+            }
+
             var rawValue = data.GetValue(field.Name);
             var contition = GetCondition(field, data);
 

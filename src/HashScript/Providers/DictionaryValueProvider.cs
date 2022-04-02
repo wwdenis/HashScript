@@ -22,6 +22,11 @@ namespace HashScript.Providers
 
         public IEnumerable<string> Functions { get; private set; }
 
+        public object GetValue()
+        {
+            return this.source.Values.FirstOrDefault();
+        }
+
         public object GetValue(string fieldName)
         {
             if (source is null)
