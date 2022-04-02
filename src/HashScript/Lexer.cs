@@ -11,6 +11,9 @@ namespace HashScript
     {
         const char ReturnChar = '\r';
 
+        private static readonly TokenType[] TextTokens = new[] { TokenType.Text, TokenType.Space, TokenType.Tab, TokenType.NewLine };
+        private static readonly TokenType[] SpecialTokens = new[] { TokenType.Hash, TokenType.Complex, TokenType.Dot, TokenType.Question, TokenType.Negate};
+
         readonly StringReader reader;
         public Lexer(string content)
         {
@@ -52,30 +55,24 @@ namespace HashScript
                 var next = reader.Peek();
                 var currentType = BuildType(current);
                 var nextType = BuildType(next);
-                
+
+                var isText = TextTokens.Contains(currentType);
+                var isSpecial = SpecialTokens.Contains(currentType);
                 var createToken = false;
 
-                switch (currentType)
+                if (isSpecial)
                 {
-                    case TokenType.Text:
-                    case TokenType.NewLine:
-                    case TokenType.Tab:
-                    case TokenType.Space:
-                        length++;
-                        createToken = currentType != nextType;
-                        if (currentType == TokenType.Text)
-                        {
-                            content.Append((char)current);
-                        }
-                        break;
-                    case TokenType.Hash:
-                    case TokenType.Complex:
-                    case TokenType.Dot:
-                    case TokenType.Question:
-                    case TokenType.Negate:
-                        length = 1;
-                        createToken = true;
-                        break;
+                    length = 1;
+                    createToken = true;
+                }
+                else if (isText)
+                {
+                    length++;
+                    createToken = currentType != nextType;
+                    if (currentType == TokenType.Text)
+                    {
+                        content.Append((char)current);
+                    }
                 }
 
                 if (createToken)

@@ -4,14 +4,14 @@ namespace HashScript.Nodes
 {
     public sealed class FieldNode : Node
     {
-        public FieldNode(string name, FieldType fieldType, FunctionType functionType)
+        public FieldNode(string name, FieldType fieldType, bool isFunction)
         {
             this.Name = name ?? string.Empty;
             this.FieldType = fieldType;
-            this.FunctionType = functionType;
+            this.IsFunction = isFunction;
         }
 
-        public FieldNode(string name) : this(name, FieldType.Simple, FunctionType.None)
+        public FieldNode(string name) : this(name, FieldType.Simple, false)
         {
         }
 
@@ -23,7 +23,7 @@ namespace HashScript.Nodes
 
         public FieldType FieldType { get; set; }
 
-        public FunctionType FunctionType { get; set; }
+        public bool IsFunction { get; set; }
 
         public string Name { get; set; }
     }

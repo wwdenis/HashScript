@@ -6,13 +6,13 @@
     <PackageId>HashScript</PackageId>
     <Product>HashScript</Product>
     <Title>HashScript</Title>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
+    <AssemblyVersion>0.0.2</AssemblyVersion>
+    <PackageVersion>0.0.2</PackageVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageVersion>0.0.1</PackageVersion>
-    <AssemblyVersion>0.0.1</AssemblyVersion>
     <Authors>Denis Da Silva</Authors>
     <Company>Denis Da Silva</Company>
-    <Copyright>Copyright © Denis Silva Da Silva 2021</Copyright>
+    <Copyright>Copyright © Denis Silva Da Silva 2022</Copyright>
     <PackageTags>Parser;Scanner;Lexer;Scripting;Syntax;Semantics;HashScript</PackageTags>
     <Description>
       HashScript is a simple and powerful scripting language , intended to be lightweight, easy to learn, and still powerful.
