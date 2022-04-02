@@ -24,9 +24,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Pack
-      run: dotnet pack --configuration Release
+      run: dotnet pack src/HashScript/HashScript.csproj --configuration Release
     - name: Publish GitHub
-      run: dotnet nuget push **/*.nupkg --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --api-key ${{secrets.GITHUB_TOKEN}}
+      run: dotnet nuget push **/*.nupkg --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --api-key ${{secrets.GITHUB_TOKEN}} --skip-duplicate
     - name: Publish Nuget
-      run: dotnet nuget push **/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}}
+      run: dotnet nuget push **/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate
       
