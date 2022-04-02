@@ -92,8 +92,7 @@ namespace HashScript
             var hasStart = false;
             var hasEnd = false;
             var hasInvalid = false;
-            var hasFunction = false;
-            var hasNested = false;
+            var hasDot = false;
 
             var fieldType = FieldType.Simple;
 
@@ -123,18 +122,17 @@ namespace HashScript
                         }
                         else
                         {
-                            hasNested = true;
                             fieldType = ParseFieldType(currentToken);
                         }
                         break;
                     case TokenType.Dot:
-                        if (!hasNested || !hasStart || nameBuffer.Any())
+                        if (!hasStart || nameBuffer.Any())
                         {
                             hasInvalid = true;
                         }
                         else
                         {
-                            hasFunction = true;
+                            hasDot = true;
                         }
                         break;
                     case TokenType.Text:
@@ -159,7 +157,10 @@ namespace HashScript
             }
 
             var fieldName = ParseContent(nameBuffer);
-            var node = new FieldNode(fieldName, fieldType, hasFunction);
+            var hasName = string.IsNullOrEmpty(fieldName);
+            var isFunction = hasDot && !hasName;
+            var isValue = hasDot && hasName;
+            var node = new FieldNode(fieldName, fieldType, isFunction, isValue);
 
             if (hasInvalid)
             {
@@ -169,7 +170,7 @@ namespace HashScript
             {
                 errorText = "Field does not contains a close Hash";
             }
-            else if (string.IsNullOrEmpty(fieldName))
+            else if (hasName && !isValue)
             {
                 if (fieldType == FieldType.Simple || parent is null)
                 {
