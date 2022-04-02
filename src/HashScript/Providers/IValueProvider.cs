@@ -7,8 +7,8 @@ namespace HashScript.Providers
     {
         IEnumerable<string> Functions { get; }
 
-        object GetValue(FieldNode field);
+        object GetValue(string fieldName);
 
-        IEnumerable<IValueProvider> GetChildren(FieldNode field);
+        IEnumerable<IValueProvider> GetChildren(string fieldName);
     }
 }
