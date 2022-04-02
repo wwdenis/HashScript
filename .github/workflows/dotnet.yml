@@ -26,11 +26,12 @@ jobs:
     name: pack & publish
     runs-on: ubuntu-latest
     needs: build
-    if: contains(github.ref, 'main')
+    # if: contains(github.ref, 'main')
     steps:
+    - uses: actions/checkout@v2
     - name: Publish
       id: publish_nuget
       uses: rohith/publish-nuget@v2
       with:
         PROJECT_FILE_PATH: src/HashScript/HashScript.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        # NUGET_KEY: ${{secrets.NUGET_API_KEY}}
