@@ -6,7 +6,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/samples/HashScript.Samples/bin/Debug/net5.0/HashScript.Samples.exe",
+            "program": "${workspaceFolder}/samples/HashScript.Samples/bin/Debug/net6.0/HashScript.Samples.exe",
             "args": [],
             "cwd": "${workspaceFolder}/samples/HashScript.Samples",
             "console": "internalConsole",
