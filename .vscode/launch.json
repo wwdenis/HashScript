@@ -6,9 +6,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/tests/HashScript.Harness/bin/Debug/net5.0/HashScript.Harness.dll",
+            "program": "${workspaceFolder}/samples/HashScript.Samples/bin/Debug/net6.0/HashScript.Samples.exe",
             "args": [],
-            "cwd": "${workspaceFolder}/tests/HashScript.Harness",
+            "cwd": "${workspaceFolder}/samples/HashScript.Samples",
             "console": "internalConsole",
             "stopAtEntry": false
         },

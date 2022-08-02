@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using HashScript.Nodes;
 
 namespace HashScript.Providers
 {
@@ -22,9 +22,19 @@ namespace HashScript.Providers
 
         public IEnumerable<string> Functions { get; private set; }
 
-        public object GetValue(FieldNode field)
+        public object GetValue()
         {
-            if (this.source.TryGetValue(field.Name, out var value))
+            return this.source.Values.FirstOrDefault();
+        }
+
+        public object GetValue(string fieldName)
+        {
+            if (source is null)
+            {
+                return null;
+            }
+
+            if (this.source.TryGetValue(fieldName, out var value))
             {
                 return value;
             }
@@ -32,14 +42,22 @@ namespace HashScript.Providers
             return null;
         }
 
-        public IEnumerable<IValueProvider> GetChildren(FieldNode field)
+        public IEnumerable<IValueProvider> GetChildren(string fieldName)
         {
-            var value = this.GetValue(field);
+            var value = this.GetValue(fieldName);
             var data = new List<Dictionary<string, object>>();
 
             if (value is IEnumerable<Dictionary<string, object>> collection)
             {
                 data.AddRange(collection);
+            }
+            else if (value is IEnumerable list && value is not string)
+            {
+                foreach (var item in list)
+                {
+                    var empty = CreateEmpty(item);
+                    data.Add(empty);
+                }
             }
             else if (value is Dictionary<string, object> single)
             {
@@ -47,10 +65,7 @@ namespace HashScript.Providers
             }
             else if (value is not null)
             {
-                var empty = new Dictionary<string, object>
-                {
-                    { "", value },
-                };
+                var empty = CreateEmpty(value);
                 data.Add(empty);
             }
 
@@ -77,6 +92,14 @@ namespace HashScript.Providers
             }
 
             return result;
+        }
+
+        private static Dictionary<string, object> CreateEmpty(object value)
+        {
+            return new Dictionary<string, object>
+            {
+                { "", value },
+            };
         }
     }
 }

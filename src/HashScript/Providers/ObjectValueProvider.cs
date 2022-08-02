@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using HashScript.Nodes;
 
 namespace HashScript.Providers
 {
@@ -23,14 +23,20 @@ namespace HashScript.Providers
 
         public IEnumerable<string> Functions { get; private set; }
 
-        public object GetValue(FieldNode field)
+        public object GetValue()
+        {
+            return this.source;
+        }
+
+        public object GetValue(string fieldName)
         {
             if (this.source is null)
             {
                 return null;
             }
+
             var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.GetProperty;
-            var prop = this.source.GetType().GetProperty(field.Name, flags);
+            var prop = this.source.GetType().GetProperty(fieldName, flags);
 
             if (prop is null)
             {
@@ -40,18 +46,18 @@ namespace HashScript.Providers
             return prop.GetValue(this.source);
         }
 
-        public IEnumerable<IValueProvider> GetChildren(FieldNode field)
+        public IEnumerable<IValueProvider> GetChildren(string fieldName)
         {
-            var value = this.GetValue(field);
-            var data = new List<object>();
+            var value = this.GetValue(fieldName);
+            IEnumerable<object> data = null;
 
-            if (value is IEnumerable<object> collection)
+            if (value is IEnumerable collection && value is not string)
             {
-                data.AddRange(collection);
+                data = collection.OfType<object>();
             }
             else if (value is not null)
             {
-                data.Add(value);
+                data = new[] { value };
             }
 
             var result = new List<ObjectValueProvider>();
@@ -67,7 +73,7 @@ namespace HashScript.Providers
                     functions.Add("First");
                 }
 
-                if (pos == data.Count)
+                if (pos == data.Count())
                 {
                     functions.Add("Last");
                 }

@@ -58,7 +58,12 @@ namespace HashScript
         {
             var builder = new StringBuilder();
 
-            var rawValue = data.GetValue(field);
+            if (field.IsValue)
+            {
+                return $"{data.GetValue()}";
+            }
+
+            var rawValue = data.GetValue(field.Name);
             var contition = GetCondition(field, data);
 
             var renderChild = false;
@@ -79,7 +84,7 @@ namespace HashScript
                     break;
                 case FieldType.Complex:
                     renderChild = true;
-                    renderData = data.GetChildren(field);
+                    renderData = data.GetChildren(field.Name);
                     break;
             }
 
@@ -102,7 +107,7 @@ namespace HashScript
                 return data.Functions.Contains(field.Name);
             }
 
-            var value = data.GetValue(field);
+            var value = data.GetValue(field.Name);
 
             if (value is bool contition)
             {
@@ -125,7 +130,7 @@ namespace HashScript
                 return collection.OfType<object>().Any();
             }
 
-            return false;
+            return value is not null;
         }
     }
 }
