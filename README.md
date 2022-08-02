@@ -25,7 +25,7 @@ A field is a placeholder for a dynamic content.
 | **+** | Indicates a `Structured Field` (inside a field) |
 | **?** | Indicates a `Conditional Field` (inside a field) |
 | **!** | Indicates a `Conditional Field` (inside a field, negate) |
-| **.** | Indicates a `Function Field` |
+| **.** | Indicates a `Function Field` or a `Value Field` |
 
 ## Field Types
 
@@ -35,6 +35,7 @@ A field is a placeholder for a dynamic content.
 | Structured Field | `#+Foo# Text #+# `| Renders data below the data structure |
 | Confitional Field | `#?Foo# Text #?# `| Renders when condition is `True` (use `!` for `False`) |
 | Function Field | `#?.Foo# Text #?# `| Renders when the function `Foo` is `True` |
+| Value Field | `The Numers are #.#`| Renders the value of a item in a collection |
 
 ## Conditional Fields
 `Conditional Field` is very flexible and can work with the followiung data types:
@@ -42,6 +43,7 @@ A field is a placeholder for a dynamic content.
 - **Number**: `True` when greather than Zero
 - **Text**: `True` when it has length
 - **Collection**: `True` when it has items
+- **Object**: `True` when the value is not `null`
 
 ## Function Fields
 `Function Field` is used to give the Renderer additional data.
@@ -302,6 +304,40 @@ For example, in the `ObjectValueProvider` the following functions are defined:
   ```
 
   Empty Inbox
+
+  ```
+  </td>
+</tr>
+
+<tr>
+  <td>
+
+  **Conditional Field**
+
+  (Value)
+  </td>
+  <td>
+
+  ```
+
+  #!Value# There is no value #!#
+
+  ```
+
+  </td>
+  <td>
+      
+  ```json
+  { 
+    "Value": null
+  }
+  ```
+  </td>
+  <td>
+      
+  ```
+
+  There is no value
 
   ```
   </td>
