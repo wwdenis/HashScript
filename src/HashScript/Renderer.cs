@@ -130,7 +130,7 @@ namespace HashScript
                 return collection.OfType<object>().Any();
             }
 
-            return false;
+            return value is not null;
         }
     }
 }
