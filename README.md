@@ -35,7 +35,7 @@ A field is a placeholder for a dynamic content.
 | Structured Field | `#+Foo# Text #+# `| Renders data below the data structure |
 | Confitional Field | `#?Foo# Text #?# `| Renders when condition is `True` (use `!` for `False`) |
 | Function Field | `#?.Foo# Text #?# `| Renders when the function `Foo` is `True` |
-| Value Field | `The Numers are #.#`| Renders the value of a item in a collection |
+| Value Field | `The Numbers are #.#`| Renders the value of a item in a collection |
 
 ## Conditional Fields
 `Conditional Field` is very flexible and can work with the followiung data types:
