@@ -23,7 +23,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/tests/HashScript.Harness/HashScript.Harness.csproj",
+                "${workspaceFolder}/tests/HashScript.Samples/HashScript.Samples.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
             },
             "problemMatcher": "$msCompile",
             "options": { 
-                "cwd": "${workspaceFolder}/tests/HashScript.Harness" 
+                "cwd": "${workspaceFolder}/samples/HashScript.Samples" 
             },
         }
     ]
