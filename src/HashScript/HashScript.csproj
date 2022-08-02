@@ -6,9 +6,9 @@
     <PackageId>HashScript</PackageId>
     <Product>HashScript</Product>
     <Title>HashScript</Title>
-    <Version>0.0.2</Version>
-    <AssemblyVersion>0.0.2</AssemblyVersion>
-    <PackageVersion>0.0.2</PackageVersion>
+    <Version>0.0.3</Version>
+    <AssemblyVersion>0.0.3</AssemblyVersion>
+    <PackageVersion>0.0.3</PackageVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Authors>Denis Da Silva</Authors>
     <Company>Denis Da Silva</Company>
