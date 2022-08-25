@@ -15,7 +15,7 @@ namespace HashScript.Providers
             this.source = source ?? throw new ArgumentNullException(nameof(source));
         }
 
-        internal ObjectValueProvider(object source, IEnumerable<string> functions)
+        private ObjectValueProvider(object source, IEnumerable<string> functions)
             : this(source)
         {
             this.Functions = functions ?? Enumerable.Empty<string>();
