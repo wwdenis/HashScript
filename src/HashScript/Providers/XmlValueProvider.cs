@@ -3,19 +3,24 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Xml;
 
 namespace HashScript.Providers
 {
-    public class ObjectValueProvider : IValueProvider
+    public class XmlValueProvider : IValueProvider
     {
-        private readonly object source;
+        private readonly XmlElement source;
 
-        public ObjectValueProvider(object source)
+        public XmlValueProvider(XmlElement source)
         {
             this.source = source ?? throw new ArgumentNullException(nameof(source));
         }
 
-        private ObjectValueProvider(object source, IEnumerable<string> functions)
+        public XmlValueProvider(XmlDocument source) : this(source?.DocumentElement)
+        {
+        }
+
+        private XmlValueProvider(XmlElement source, IEnumerable<string> functions)
             : this(source)
         {
             this.Functions = functions ?? Enumerable.Empty<string>();
@@ -25,7 +30,7 @@ namespace HashScript.Providers
 
         public object GetValue()
         {
-            return this.source;
+            return this.source.InnerText;
         }
 
         public object GetValue(string fieldName)
@@ -35,33 +40,27 @@ namespace HashScript.Providers
                 return null;
             }
 
-            var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.GetProperty;
-            var prop = this.source.GetType().GetProperty(fieldName, flags);
 
-            if (prop is null)
+            if (string.Equals(fieldName, this.source.Name))
             {
-                return null;
+                return this.source.InnerText;
             }
 
-            return prop.GetValue(this.source);
+            return this
+                .source
+                .GetElementsByTagName(fieldName)
+                .OfType<XmlElement>()
+                .SingleOrDefault()?
+                .InnerText;
         }
 
         public IEnumerable<IValueProvider> GetChildren(string fieldName)
         {
-            var value = this.GetValue(fieldName);
-            IEnumerable<object> data = null;
-
-            if (value is IEnumerable collection && value is not string)
-            {
-                data = collection.OfType<object>();
-            }
-            else if (value is not null)
-            {
-                data = new[] { value };
-            }
-
-            var result = new List<ObjectValueProvider>();
+            var result = new List<XmlValueProvider>();
             var pos = 0;
+
+            var children = this.source.ChildNodes;
+            var data = children.OfType<XmlElement>();
 
             foreach (var item in data)
             {
@@ -78,7 +77,7 @@ namespace HashScript.Providers
                     functions.Add("Last");
                 }
 
-                var provider = new ObjectValueProvider(item, functions);
+                var provider = new XmlValueProvider(item, functions);
                 result.Add(provider);
             }
 
